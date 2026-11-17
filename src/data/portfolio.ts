@@ -98,7 +98,7 @@ export const defaultTechStack: TechItem[] = [
   { name: "C#", category: "Languages", img: "/tech/csharp.png" },
   { name: "SQL", category: "Databases", img: "/tech/sql.png" },
   { name: "SQLite", category: "Databases", img: "/tech/sqlite.png" },
-  { name: "Firebase", category: "Databases", icon: "firebase" },
+  { name: "Firebase", category: "Databases", img: "/tech/firebase.svg" },
   { name: "Flutter", category: "Frameworks", img: "/tech/flutter.png" },
   { name: "React", category: "Frameworks", img: "/tech/react.png" },
   { name: "Vite", category: "Frameworks", img: "/tech/vite.webp" },
