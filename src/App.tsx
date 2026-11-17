@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion, useMotionValue, useScroll, useSpring } from "framer-motion";
+import { MotionConfig, motion, useMotionValue, useScroll, useSpring } from "framer-motion";
 import Nav from "./components/Nav";
 import MobileBar from "./components/MobileBar";
 import { SECTION_IDS, type SectionId } from "./data/sections";
@@ -49,25 +49,27 @@ export default function App() {
   }, []);
 
   return (
-    <div className="page">
-      <motion.div className="cursor-glow" style={{ x: mx, y: my }} aria-hidden="true" />
-      <motion.div className="progress-bar" style={{ scaleX: progress }} aria-hidden="true" />
+    <MotionConfig reducedMotion="user">
+      <div className="page">
+        <motion.div className="cursor-glow" style={{ x: mx, y: my }} aria-hidden="true" />
+        <motion.div className="progress-bar" style={{ scaleX: progress }} aria-hidden="true" />
 
-      <Nav active={active} />
+        <Nav active={active} />
 
-      <main>
-        <Hero />
-        <About />
-        <Stack content={content} />
-        <Experience content={content} />
-        <Projects />
-        <Education content={content} />
-        <Contact />
-      </main>
+        <main>
+          <Hero />
+          <About />
+          <Stack content={content} />
+          <Experience content={content} />
+          <Projects />
+          <Education content={content} />
+          <Contact />
+        </main>
 
-      <Footer onTop={() => window.scrollTo({ top: 0, behavior: "smooth" })} progress={progress} />
+        <Footer onTop={() => window.scrollTo({ top: 0, behavior: "smooth" })} progress={progress} />
 
-      <MobileBar active={active} />
-    </div>
+        <MobileBar active={active} />
+      </div>
+    </MotionConfig>
   );
 }
