@@ -5,7 +5,8 @@ import {
   Brain,
   Bike,
   Warehouse,
-  Orbit,
+  Siren,
+  ChevronDown,
   ExternalLink,
   Mail,
   MapPin,
@@ -281,6 +282,18 @@ function WelcomeView({ onOpenFile }: { onOpenFile: (id: FileId) => void }) {
         <span><kbd>Ctrl</kbd><kbd>`</kbd> terminal</span>
         <span>try typing <kbd>help</kbd> in the terminal</span>
       </motion.div>
+
+      <motion.div
+        className="scroll-hint"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.4, duration: 0.6 }}
+        onClick={() => onOpenFile("about")}
+        title="Open about.tsx"
+      >
+        <ChevronDown size={14} className="scroll-chevron" />
+        <span>scroll — the journey continues</span>
+      </motion.div>
     </div>
   );
 }
@@ -353,6 +366,32 @@ function AboutView() {
 /* ============================================================
    skills.json — Skills + tech stack chips
    ============================================================ */
+/* Tech chip with a devicon logo (falls back to a colored dot if offline) */
+function TechChip({ name, icon }: { name: string; icon?: string }) {
+  const [imgErr, setImgErr] = useState(false);
+  return (
+    <motion.span
+      className="tech-chip"
+      whileHover={{ y: -3, scale: 1.05 }}
+      transition={{ type: "spring", stiffness: 400, damping: 18 }}
+    >
+      {icon && !imgErr ? (
+        <img
+          src={`https://cdn.jsdelivr.net/gh/devicon/devicon@latest/icons/${icon}/${icon}-original.svg`}
+          alt=""
+          width={17}
+          height={17}
+          loading="lazy"
+          onError={() => setImgErr(true)}
+        />
+      ) : (
+        <span className="tech-dot" />
+      )}
+      {name}
+    </motion.span>
+  );
+}
+
 function SkillsView({ content }: { content: EditableContent }) {
   const { ref, inView } = useInViewOnce<HTMLDivElement>();
 
@@ -398,14 +437,7 @@ function SkillsView({ content }: { content: EditableContent }) {
             {content.techStack
               .filter((t) => t.category === cat)
               .map((t) => (
-                <motion.span
-                  key={t.name}
-                  className="tech-chip"
-                  whileHover={{ y: -3, scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 18 }}
-                >
-                  {t.name}
-                </motion.span>
+                <TechChip key={t.name} name={t.name} icon={t.icon} />
               ))}
           </div>
         </div>
@@ -418,7 +450,7 @@ function SkillsView({ content }: { content: EditableContent }) {
    projects/ — Projects (real repos)
    ============================================================ */
 function ProjectsView() {
-  const icons = [Brain, Bike, Warehouse, Orbit, Rocket];
+  const icons = [Brain, Bike, Warehouse, Siren, Rocket];
 
   return (
     <div>

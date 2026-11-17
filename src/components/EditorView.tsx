@@ -243,6 +243,14 @@ export default function EditorView({ content, save, reset, hasOverrides, onExit 
                 onChange={(e) => setTech(content.techStack.map((x, j) => (j === i ? { ...x, category: e.target.value } : x)))}
                 placeholder="Category"
               />
+              <input
+                className={inputStyle}
+                style={{ flex: 0, width: 110 }}
+                value={t.icon ?? ""}
+                onChange={(e) => setTech(content.techStack.map((x, j) => (j === i ? { ...x, icon: e.target.value } : x)))}
+                placeholder="icon slug"
+                title="devicon.dev slug (e.g. react, dart) — optional logo"
+              />
               <DelButton onClick={() => setTech(content.techStack.filter((_, j) => j !== i))} />
             </div>
           ))}

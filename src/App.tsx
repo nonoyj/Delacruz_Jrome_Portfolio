@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { PanelLeft } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { PanelLeft, Bell, X } from "lucide-react";
 import TitleBar from "./components/TitleBar";
 import ActivityBar, { type SidebarView } from "./components/ActivityBar";
 import Sidebar from "./components/Sidebar";
@@ -25,6 +26,24 @@ export default function App() {
   const { content, save, reset, hasOverrides } = useContent();
   const [editorUnlocked, setEditorUnlocked] = useState(false);
   const [gateOpen, setGateOpen] = useState(false);
+
+  /* VS Code-style welcome notification (once per browser session) */
+  const [notifOpen, setNotifOpen] = useState(false);
+  useEffect(() => {
+    if (sessionStorage.getItem("jrome-notif-dismissed")) return;
+    const t = window.setTimeout(() => setNotifOpen(true), 1600);
+    return () => window.clearTimeout(t);
+  }, []);
+  const dismissNotif = useCallback((forever: boolean) => {
+    setNotifOpen(false);
+    if (forever) {
+      try {
+        sessionStorage.setItem("jrome-notif-dismissed", "1");
+      } catch {
+        /* ignore */
+      }
+    }
+  }, []);
 
   const openFile = useCallback(
     (id: FileId) => {
@@ -180,6 +199,40 @@ export default function App() {
         onEnterEditor={handleEnterEditor}
         onExitEditor={handleExitEditor}
       />
+
+      <AnimatePresence>
+        {notifOpen && (
+          <motion.div
+            className="notif"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 40 }}
+            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+            role="status"
+          >
+            <div className="notif-head">
+              <Bell size={13} />
+              <span>Welcome to my workbench</span>
+              <button type="button" className="notif-x" onClick={() => dismissNotif(false)} title="Dismiss">
+                <X size={13} />
+              </button>
+            </div>
+            <p className="notif-body">
+              This portfolio is a working VS Code. Press <kbd>Ctrl</kbd> + <kbd>K</kbd> for
+              the command palette, type <code>help</code> in the terminal, and click any file
+              in the explorer to explore.
+            </p>
+            <div className="notif-actions">
+              <button type="button" className="ed-btn" onClick={() => dismissNotif(false)}>
+                Dismiss
+              </button>
+              <button type="button" className="ed-btn" onClick={() => dismissNotif(true)}>
+                Don't show again
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <EditorGate open={gateOpen} onClose={() => setGateOpen(false)} onUnlock={handleUnlock} />
     </div>

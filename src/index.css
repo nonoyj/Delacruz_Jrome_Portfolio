@@ -2178,3 +2178,114 @@ body {
   background: #4ade80;
   box-shadow: 0 0 6px rgba(74, 222, 128, 0.8);
 }
+
+/* ============================================================
+   Tech chips with devicon logos
+   ============================================================ */
+.tech-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.tech-chip img {
+  display: block;
+  filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.25));
+}
+.tech-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Scroll hint (hero)
+   ============================================================ */
+.scroll-hint {
+  margin-top: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.scroll-hint:hover { color: var(--accent); }
+.scroll-chevron {
+  color: var(--accent);
+  animation: hint-bounce 1.6s ease-in-out infinite;
+}
+@keyframes hint-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.9; }
+  50% { transform: translateY(5px); opacity: 0.4; }
+}
+
+/* ============================================================
+   VS Code-style notification toast
+   ============================================================ */
+.notif {
+  position: fixed;
+  right: 16px;
+  bottom: calc(var(--statusbar-h) + 14px);
+  width: min(360px, calc(100vw - 32px));
+  background: #252526;
+  border: 1px solid var(--border-strong);
+  border-left: 3px solid var(--accent-strong);
+  border-radius: 7px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+  padding: 12px 14px;
+  z-index: 90;
+}
+.notif-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+.notif-head svg { color: var(--accent); }
+.notif-x {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.notif-x:hover { background: rgba(255, 255, 255, 0.08); color: var(--text-bright); }
+.notif-body {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-dim);
+  margin: 8px 0 10px;
+}
+.notif-body kbd {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--text);
+}
+.notif-body code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+}
+.notif-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}

@@ -95,7 +95,7 @@ export default function Terminal({ onOpenFile, onClose, onEnterEditor, content }
           { text: "  ▸ mindful-minute.tsx (2026)", kind: "out" },
           { text: "  ▸ m-gear-iloilo.tsx (2026)", kind: "out" },
           { text: "  ▸ mywarehouse-inventory.tsx (2026)", kind: "out" },
-          { text: "  ▸ evolverse.tsx — collab (2026)", kind: "out" },
+          { text: "  ▸ emergen.tsx — collab · live: emergeng.netlify.app (2026)", kind: "out" },
         ]);
         break;
       case "experience":

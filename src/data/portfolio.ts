@@ -34,7 +34,7 @@ export const profile = {
   ],
   stats: [
     { value: "4", label: "Projects Built" },
-    { value: "8+", label: "Technologies" },
+    { value: "15+", label: "Technologies" },
     { value: "3", label: "Public Repos" },
     { value: "∞", label: "Riffs Jammed" },
   ],
@@ -59,6 +59,7 @@ export const defaultSkills: SkillCategory[] = [
       { name: "TypeScript", level: 70 },
       { name: "JavaScript", level: 72 },
       { name: "Python", level: 60 },
+      { name: "C#", level: 58 },
       { name: "SQL", level: 62 },
       { name: "HTML / CSS", level: 85 },
     ],
@@ -87,21 +88,27 @@ export const defaultSkills: SkillCategory[] = [
 export interface TechItem {
   name: string;
   category: string;
+  icon?: string; // devicon slug (https://devicon.dev) — e.g. "react"
 }
 
 export const defaultTechStack: TechItem[] = [
-  { name: "Dart", category: "Languages" },
-  { name: "TypeScript", category: "Languages" },
-  { name: "JavaScript", category: "Languages" },
-  { name: "Python", category: "Languages" },
-  { name: "SQL", category: "Languages" },
-  { name: "Flutter", category: "Frameworks" },
-  { name: "React", category: "Frameworks" },
-  { name: "Vite", category: "Frameworks" },
-  { name: "Node.js", category: "Frameworks" },
-  { name: "Kotlin", category: "Frameworks" },
-  { name: "HTML5 / CSS3", category: "Web" },
-  { name: "Git & GitHub", category: "Web" },
+  { name: "Dart", category: "Languages", icon: "dart" },
+  { name: "TypeScript", category: "Languages", icon: "typescript" },
+  { name: "JavaScript", category: "Languages", icon: "javascript" },
+  { name: "Python", category: "Languages", icon: "python" },
+  { name: "C#", category: "Languages", icon: "csharp" },
+  { name: "SQL", category: "Databases", icon: "mysql" },
+  { name: "SQLite", category: "Databases", icon: "sqlite" },
+  { name: "Firebase", category: "Databases", icon: "firebase" },
+  { name: "Flutter", category: "Frameworks", icon: "flutter" },
+  { name: "React", category: "Frameworks", icon: "react" },
+  { name: "Vite", category: "Frameworks", icon: "vite" },
+  { name: "Node.js", category: "Frameworks", icon: "nodejs" },
+  { name: "Kotlin", category: "Frameworks", icon: "kotlin" },
+  { name: "HTML5 / CSS3", category: "Web & Tools", icon: "html5" },
+  { name: "Tailwind CSS", category: "Web & Tools", icon: "tailwindcss" },
+  { name: "Git & GitHub", category: "Web & Tools", icon: "git" },
+  { name: "Android", category: "Web & Tools", icon: "android" },
 ];
 
 /* ---------------- Certifications (editable in Editor Mode) ----------------
@@ -147,18 +154,19 @@ export const projects: Project[] = [
   {
     name: "MyWarehouse Inventory",
     description:
-      "A DBMS project: warehouse inventory management system covering database schema design, product and stock tracking, and transaction handling.",
-    tech: ["SQL", "Database Design"],
+      "A warehouse inventory management system built as a DBMS2 course requirement — a C# application with database-driven product, stock, and transaction management.",
+    tech: ["C#", "SQL", "Database Design"],
     year: "2026",
     github: "https://github.com/nonoyj/DBMS---MyWarehouse-Inventory-Management-",
   },
   {
-    name: "Evolverse",
+    name: "Emergen",
     description:
-      "A team collaboration for DevDash 2026 with Klyxen — building 'Evolverse' together in a shared codebase, from planning to shipping.",
-    tech: ["Team Project"],
+      "A community emergency-alert web app for Iloilo City, built with Team Klyxen for DevDash 2026. Post disaster alerts (fire, flood, earthquake, typhoon…), verify reports in real time, and keep reporting even offline with a dedicated offline mode.",
+    tech: ["Web App", "Realtime", "Offline Mode"],
     year: "2026",
     github: "https://github.com/Klyxen/DevDash2026-Evolverse",
+    live: "https://emergeng.netlify.app/",
     collab: true,
   },
 ];
