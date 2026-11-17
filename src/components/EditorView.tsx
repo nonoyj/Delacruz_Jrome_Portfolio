@@ -112,7 +112,7 @@ export default function EditorView({ content, save, reset, hasOverrides, onExit 
       <div className="ed-toolbar">
         <div>
           <div className="ed-toolbar-title">
-            <span className="tok-kw">editor.config</span> — signed in as{" "}
+            <span className="tok-kw">editor.mode</span> — signed in as{" "}
             <span className="ed-me">J'rome</span>
           </div>
           <div className="ed-toolbar-note">

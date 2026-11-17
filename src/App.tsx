@@ -1,238 +1,121 @@
 import { useCallback, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { PanelLeft, Bell, X } from "lucide-react";
-import TitleBar from "./components/TitleBar";
-import ActivityBar, { type SidebarView } from "./components/ActivityBar";
-import Sidebar from "./components/Sidebar";
-import EditorArea from "./components/EditorArea";
-import Terminal from "./components/Terminal";
-import StatusBar from "./components/StatusBar";
-import CommandPalette from "./components/CommandPalette";
+import { motion, useMotionValue, useScroll, useSpring } from "framer-motion";
+import Nav, { SECTION_IDS, type SectionId } from "./components/Nav";
+import { Hero, About, Stack, Experience, Projects, Education, Contact, Footer, EditorModal } from "./components/sections";
 import EditorGate from "./components/EditorGate";
 import { useContent } from "./hooks/useContent";
-import type { FileId } from "./data/files";
 
 export default function App() {
-  const [openTabs, setOpenTabs] = useState<FileId[]>(["welcome"]);
-  const [activeFile, setActiveFile] = useState<FileId>("welcome");
-  const [view, setView] = useState<SidebarView>("explorer");
-  const [showSidebar, setShowSidebar] = useState(true);
-  const [mobileSidebar, setMobileSidebar] = useState(false);
-  const [terminalOpen, setTerminalOpen] = useState(true);
-  const [paletteOpen, setPaletteOpen] = useState(false);
-  const [line, setLine] = useState(1);
+  const { content, save, reset, hasOverrides } = useContent();
 
   /* Editor Mode (admin) */
-  const { content, save, reset, hasOverrides } = useContent();
   const [editorUnlocked, setEditorUnlocked] = useState(false);
   const [gateOpen, setGateOpen] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
 
-  /* VS Code-style welcome notification (once per browser session) */
-  const [notifOpen, setNotifOpen] = useState(false);
-  useEffect(() => {
-    if (sessionStorage.getItem("jrome-notif-dismissed")) return;
-    const t = window.setTimeout(() => setNotifOpen(true), 1600);
-    return () => window.clearTimeout(t);
-  }, []);
-  const dismissNotif = useCallback((forever: boolean) => {
-    setNotifOpen(false);
-    if (forever) {
-      try {
-        sessionStorage.setItem("jrome-notif-dismissed", "1");
-      } catch {
-        /* ignore */
-      }
-    }
-  }, []);
+  const handleEnterEditor = useCallback(() => {
+    if (editorUnlocked) setEditorOpen(true);
+    else setGateOpen(true);
+  }, [editorUnlocked]);
 
-  const openFile = useCallback(
-    (id: FileId) => {
-      if (id === "editor" && !editorUnlocked) {
-        setGateOpen(true);
-        return;
-      }
-      setOpenTabs((tabs) => (tabs.includes(id) ? tabs : [...tabs, id]));
-      setActiveFile(id);
-      setMobileSidebar(false);
-    },
-    [editorUnlocked]
-  );
-
-  const selectTab = useCallback((id: FileId) => setActiveFile(id), []);
-
-  const closeTab = useCallback(
-    (id: FileId) => {
-      setOpenTabs((tabs) => {
-        if (tabs.length === 1) return tabs;
-        const idx = tabs.indexOf(id);
-        const next = tabs.filter((t) => t !== id);
-        if (id === activeFile) setActiveFile(next[Math.max(0, idx - 1)]);
-        return next;
-      });
-    },
-    [activeFile]
-  );
-
-  /* Editor Mode handlers */
   const handleUnlock = useCallback(() => {
     setEditorUnlocked(true);
     setGateOpen(false);
-    setOpenTabs((tabs) => (tabs.includes("editor") ? tabs : [...tabs, "editor"]));
-    setActiveFile("editor");
-    setView("admin");
+    setEditorOpen(true);
   }, []);
-
-  const handleEnterEditor = useCallback(() => {
-    if (editorUnlocked) {
-      handleUnlock();
-    } else {
-      setGateOpen(true);
-    }
-  }, [editorUnlocked, handleUnlock]);
 
   const handleExitEditor = useCallback(() => {
     setEditorUnlocked(false);
-    setOpenTabs((tabs) => {
-      const next = tabs.filter((t) => t !== "editor");
-      if (activeFile === "editor") setActiveFile(next[0] ?? "welcome");
-      return next.length ? next : ["welcome"];
-    });
-    setView("explorer");
-  }, [activeFile]);
+    setEditorOpen(false);
+  }, []);
 
-  const handleUserClick = useCallback(() => {
-    if (editorUnlocked) {
-      handleEnterEditor();
-    } else {
-      setGateOpen(true);
-    }
-  }, [editorUnlocked, handleEnterEditor]);
+  /* lock page scroll while a modal is open */
+  useEffect(() => {
+    const locked = gateOpen || editorOpen;
+    document.body.style.overflow = locked ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [gateOpen, editorOpen]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const mod = e.ctrlKey || e.metaKey;
-      if (mod && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        setPaletteOpen((p) => !p);
-      } else if (mod && e.key === "`") {
-        e.preventDefault();
-        setTerminalOpen((t) => !t);
-      } else if (mod && e.key.toLowerCase() === "b") {
-        e.preventDefault();
-        setShowSidebar((s) => !s);
-      } else if (e.key === "Escape") {
-        setPaletteOpen(false);
+      if (e.key === "Escape") {
         setGateOpen(false);
+        setEditorOpen(false);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  /* scroll progress bar */
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 26 });
+
+  /* cursor-follow glow (desktop) */
+  const mx = useMotionValue(-600);
+  const my = useMotionValue(-600);
+  useEffect(() => {
+    const h = (e: MouseEvent) => {
+      mx.set(e.clientX);
+      my.set(e.clientY);
+    };
+    window.addEventListener("mousemove", h, { passive: true });
+    return () => window.removeEventListener("mousemove", h);
+  }, [mx, my]);
+
+  /* scroll spy for nav */
+  const [active, setActive] = useState<SectionId | "home">("home");
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const id = entry.target.id as SectionId;
+            setActive(SECTION_IDS.includes(id as SectionId) ? id : "home");
+          }
+        }
+      },
+      { rootMargin: "-30% 0px -60% 0px" }
+    );
+    SECTION_IDS.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) obs.observe(el);
+    });
+    const home = document.getElementById("home");
+    if (home) obs.observe(home);
+    return () => obs.disconnect();
+  }, []);
+
   return (
-    <div className="vscode-window">
-      <TitleBar onOpenPalette={() => setPaletteOpen(true)} />
+    <div className="page">
+      <motion.div className="cursor-glow" style={{ x: mx, y: my }} aria-hidden="true" />
+      <motion.div className="progress-bar" style={{ scaleX: progress }} aria-hidden="true" />
 
-      <div className="main-row">
-        <ActivityBar
-          view={view}
-          onChangeView={setView}
-          terminalOpen={terminalOpen}
-          onToggleTerminal={() => setTerminalOpen((t) => !t)}
-          editorUnlocked={editorUnlocked}
-          onUserClick={handleUserClick}
-        />
+      <Nav active={active} onEditorClick={handleEnterEditor} />
 
-        {showSidebar && (
-          <Sidebar
-            view={view}
-            activeFile={activeFile}
-            onOpenFile={openFile}
-            open={mobileSidebar}
-            editorUnlocked={editorUnlocked}
-            onEditorClick={() => openFile("editor")}
-          />
-        )}
+      <main>
+        <Hero />
+        <About />
+        <Stack content={content} />
+        <Experience content={content} />
+        <Projects />
+        <Education content={content} onEnterEditor={handleEnterEditor} />
+        <Contact />
+      </main>
 
-        <EditorArea
-          openTabs={openTabs}
-          activeFile={activeFile}
-          onSelectTab={selectTab}
-          onCloseTab={closeTab}
-          onOpenFile={openFile}
-          onLineChange={setLine}
-          content={content}
-          editor={{ save, reset, hasOverrides, onExit: handleExitEditor, onEnter: handleEnterEditor }}
-        />
-      </div>
+      <Footer onEditorClick={handleEnterEditor} onTop={() => window.scrollTo({ top: 0, behavior: "smooth" })} />
 
-      {terminalOpen && (
-        <Terminal
-          onOpenFile={openFile}
-          onClose={() => setTerminalOpen(false)}
-          onEnterEditor={handleEnterEditor}
-          content={content}
-        />
-      )}
-
-      <StatusBar
-        activeFile={activeFile}
-        line={line}
-        onToggleTerminal={() => setTerminalOpen((t) => !t)}
+      <EditorModal
+        open={editorOpen}
+        content={content}
+        save={save}
+        reset={reset}
+        hasOverrides={hasOverrides}
+        onClose={() => setEditorOpen(false)}
+        onExit={handleExitEditor}
       />
-
-      <button
-        type="button"
-        className="mobile-toggle"
-        title="Toggle file explorer"
-        onClick={() => setMobileSidebar((m) => !m)}
-      >
-        <PanelLeft size={20} />
-      </button>
-
-      <CommandPalette
-        open={paletteOpen}
-        onClose={() => setPaletteOpen(false)}
-        onOpenFile={openFile}
-        onToggleTerminal={() => setTerminalOpen((t) => !t)}
-        editorUnlocked={editorUnlocked}
-        onEnterEditor={handleEnterEditor}
-        onExitEditor={handleExitEditor}
-      />
-
-      <AnimatePresence>
-        {notifOpen && (
-          <motion.div
-            className="notif"
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 40 }}
-            transition={{ type: "spring", stiffness: 380, damping: 30 }}
-            role="status"
-          >
-            <div className="notif-head">
-              <Bell size={13} />
-              <span>Welcome to my workbench</span>
-              <button type="button" className="notif-x" onClick={() => dismissNotif(false)} title="Dismiss">
-                <X size={13} />
-              </button>
-            </div>
-            <p className="notif-body">
-              This portfolio is a working VS Code. Press <kbd>Ctrl</kbd> + <kbd>K</kbd> for
-              the command palette, type <code>help</code> in the terminal, and click any file
-              in the explorer to explore.
-            </p>
-            <div className="notif-actions">
-              <button type="button" className="ed-btn" onClick={() => dismissNotif(false)}>
-                Dismiss
-              </button>
-              <button type="button" className="ed-btn" onClick={() => dismissNotif(true)}>
-                Don't show again
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <EditorGate open={gateOpen} onClose={() => setGateOpen(false)} onUnlock={handleUnlock} />
     </div>
