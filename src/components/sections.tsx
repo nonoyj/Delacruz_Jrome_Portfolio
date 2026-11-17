@@ -278,7 +278,7 @@ export function About() {
 /* ============================================================
    TECH STACK
    ============================================================ */
-function TechTile({ name, icon }: { name: string; icon?: string }) {
+function TechTile({ name, img, icon }: { name: string; img?: string; icon?: string }) {
   const [imgErr, setImgErr] = useState(false);
   return (
     <motion.div
@@ -287,7 +287,16 @@ function TechTile({ name, icon }: { name: string; icon?: string }) {
       whileHover={{ y: -5 }}
       transition={{ type: "spring", stiffness: 380, damping: 20 }}
     >
-      {icon && !imgErr ? (
+      {img && !imgErr ? (
+        <img
+          src={img}
+          alt={name}
+          width={42}
+          height={42}
+          loading="lazy"
+          onError={() => setImgErr(true)}
+        />
+      ) : icon && !imgErr ? (
         <img
           src={`https://cdn.jsdelivr.net/gh/devicon/devicon@latest/icons/${icon}/${icon}-original.svg`}
           alt={name}
@@ -326,7 +335,7 @@ export function Stack({ content }: { content: EditableContent }) {
               {content.techStack
                 .filter((t) => t.category === cat)
                 .map((t) => (
-                  <TechTile key={t.name} name={t.name} icon={t.icon} />
+                  <TechTile key={t.name} name={t.name} img={t.img} icon={t.icon} />
                 ))}
             </motion.div>
           </div>

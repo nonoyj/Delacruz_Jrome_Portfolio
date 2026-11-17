@@ -43,7 +43,7 @@ export const profile = {
   },
 };
 
-/* ---------------- Skills (editable in Editor Mode) ---------------- */
+/*/* ---------------- Skills ---------------- */
 export interface SkillCategory {
   title: string;
   skills: { name: string; level: number }[]; // level: 0–100
@@ -82,31 +82,35 @@ export const defaultSkills: SkillCategory[] = [
   },
 ];
 
-/* ---------------- Tech stack (editable in Editor Mode) ---------------- */
+/* ---------------- Tech stack ---------------- */
 export interface TechItem {
   name: string;
   category: string;
-  icon?: string; // devicon slug (https://devicon.dev) — e.g. "react"
+  img?: string; // local logo in public/tech/ (takes precedence)
+  icon?: string; // devicon slug fallback (https://devicon.dev)
 }
 
 export const defaultTechStack: TechItem[] = [
-  { name: "Dart", category: "Languages", icon: "dart" },
-  { name: "TypeScript", category: "Languages", icon: "typescript" },
-  { name: "JavaScript", category: "Languages", icon: "javascript" },
-  { name: "Python", category: "Languages", icon: "python" },
-  { name: "C#", category: "Languages", icon: "csharp" },
-  { name: "SQL", category: "Databases", icon: "mysql" },
-  { name: "SQLite", category: "Databases", icon: "sqlite" },
+  { name: "Dart", category: "Languages", img: "/tech/dart.png" },
+  { name: "TypeScript", category: "Languages", img: "/tech/typescript.png" },
+  { name: "JavaScript", category: "Languages", img: "/tech/javascript.png" },
+  { name: "Python", category: "Languages", img: "/tech/python.png" },
+  { name: "C#", category: "Languages", img: "/tech/csharp.png" },
+  { name: "SQL", category: "Databases", img: "/tech/sql.png" },
+  { name: "SQLite", category: "Databases", img: "/tech/sqlite.png" },
   { name: "Firebase", category: "Databases", icon: "firebase" },
-  { name: "Flutter", category: "Frameworks", icon: "flutter" },
-  { name: "React", category: "Frameworks", icon: "react" },
-  { name: "Vite", category: "Frameworks", icon: "vite" },
-  { name: "Node.js", category: "Frameworks", icon: "nodejs" },
-  { name: "Kotlin", category: "Frameworks", icon: "kotlin" },
-  { name: "HTML5 / CSS3", category: "Web & Tools", icon: "html5" },
-  { name: "Tailwind CSS", category: "Web & Tools", icon: "tailwindcss" },
-  { name: "Git & GitHub", category: "Web & Tools", icon: "git" },
-  { name: "Android", category: "Web & Tools", icon: "android" },
+  { name: "Flutter", category: "Frameworks", img: "/tech/flutter.png" },
+  { name: "React", category: "Frameworks", img: "/tech/react.png" },
+  { name: "Vite", category: "Frameworks", img: "/tech/vite.webp" },
+  { name: "Node.js", category: "Frameworks", img: "/tech/nodejs.webp" },
+  { name: "Kotlin", category: "Frameworks", img: "/tech/kotlin.png" },
+  { name: "HTML5", category: "Web & Tools", img: "/tech/html5.webp" },
+  { name: "CSS3", category: "Web & Tools", img: "/tech/css3.webp" },
+  { name: "Tailwind CSS", category: "Web & Tools", img: "/tech/tailwind.webp" },
+  { name: "Git & GitHub", category: "Web & Tools", img: "/tech/git-github.png" },
+  { name: "Android", category: "Web & Tools", img: "/tech/android.webp" },
+  { name: "VS Code", category: "Web & Tools", img: "/tech/vscode.webp" },
+  { name: "Cisco Packet Tracer", category: "Web & Tools", img: "/tech/cisco-packet-tracer.webp" },
 ];
 
 /* ---------------- Certifications ---------------- */
@@ -194,7 +198,7 @@ export const projects: Project[] = [
   },
 ];
 
-/* ---------------- Experiences (editable in Editor Mode) ---------------- */
+/*/* ---------------- Experiences ---------------- */
 export interface ExperienceItem {
   date: string;
   role: string;
@@ -247,7 +251,7 @@ export const defaultExperiences: ExperienceItem[] = [
   },
 ];
 
-/* ---------------- Education (editable in Editor Mode) ---------------- */
+/*/* ---------------- Education ---------------- */
 export interface EducationItem {
   period: string;
   degree: string;
