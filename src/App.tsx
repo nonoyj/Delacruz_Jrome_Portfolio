@@ -65,7 +65,7 @@ export default function App() {
         <Contact />
       </main>
 
-      <Footer onTop={() => window.scrollTo({ top: 0, behavior: "smooth" })} />
+      <Footer onTop={() => window.scrollTo({ top: 0, behavior: "smooth" })} progress={progress} />
 
       <MobileBar active={active} />
     </div>

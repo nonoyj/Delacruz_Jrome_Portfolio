@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, type MotionValue } from "framer-motion";
 import {
   ArrowUp,
   Award,
@@ -7,7 +7,6 @@ import {
   Bike,
   Warehouse,
   Siren,
-  ChevronDown,
   Copy,
   Check,
   Download,
@@ -28,10 +27,10 @@ import { GithubIcon, LinkedinIcon, FacebookIcon } from "./icons";
 /* ---------- shared ---------- */
 
 const fadeUp = {
-  initial: { opacity: 0, y: 26 },
-  whileInView: { opacity: 1, y: 0 },
+  initial: { opacity: 0, y: 30, filter: "blur(8px)" },
+  whileInView: { opacity: 1, y: 0, filter: "blur(0px)" },
   viewport: { once: true, margin: "-60px" },
-  transition: { duration: 0.6, ease: "easeOut" as const },
+  transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
 };
 
 const stagger = {
@@ -224,9 +223,12 @@ export function Hero() {
         ))}
       </motion.div>
 
-      <motion.a href="#about" className="scroll-indicator" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 0.6 }}>
-        <ChevronDown size={15} className="scroll-chevron" />
-        <span>scroll</span>
+      <motion.a href="#about" className="scroll-indicator" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 0.6 }} aria-label="Scroll to About section">
+        <span className="si-text">scroll</span>
+        <span className="si-track" aria-hidden="true">
+          <span className="si-thumb" />
+        </span>
+        <span className="si-text">scroll</span>
       </motion.a>
     </section>
   );
@@ -702,14 +704,24 @@ export function Contact() {
 /* ============================================================
    FOOTER
    ============================================================ */
-export function Footer({ onTop }: { onTop: () => void }) {
+export function Footer({ onTop, progress }: { onTop: () => void; progress: MotionValue<number> }) {
   return (
     <footer className="footer">
       <div className="wrap footer-inner">
         <div className="footer-note tok-com">{"// designed & built by J'rome A. De la Cruz — React + TypeScript"}</div>
         <div className="footer-actions">
-          <button type="button" className="top-btn" onClick={onTop} title="Back to top">
-            <ArrowUp size={15} />
+          <button type="button" className="top-btn" onClick={onTop} title="Back to top" aria-label="Back to top">
+            <svg className="top-ring" viewBox="0 0 36 36" aria-hidden="true">
+              <circle className="top-ring-bg" cx="18" cy="18" r="16" />
+              <motion.circle
+                className="top-ring-fg"
+                cx="18"
+                cy="18"
+                r="16"
+                style={{ pathLength: progress }}
+              />
+            </svg>
+            <ArrowUp size={15} className="top-arrow" />
           </button>
         </div>
       </div>
