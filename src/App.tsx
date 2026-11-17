@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, useScroll, useSpring } from "framer-motion";
-import Nav, { SECTION_IDS, type SectionId } from "./components/Nav";
+import Nav from "./components/Nav";
+import MobileBar from "./components/MobileBar";
+import { SECTION_IDS, type SectionId } from "./data/sections";
 import { Hero, About, Stack, Experience, Projects, Education, Contact, Footer } from "./components/sections";
 import { defaultContent } from "./data/portfolio";
 
@@ -64,6 +66,8 @@ export default function App() {
       </main>
 
       <Footer onTop={() => window.scrollTo({ top: 0, behavior: "smooth" })} />
+
+      <MobileBar active={active} />
     </div>
   );
 }

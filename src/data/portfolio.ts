@@ -20,15 +20,14 @@ export const profile = {
   tagline:
     "I turn curiosity into code and ideas into working software — where technology meets music.",
   bio: [
-    "I'm an IT student from Iloilo City, Philippines, passionate about technology, programming, and cybersecurity. I have a strong interest in learning how things work — and in building practical projects that put that understanding to use.",
-    "Outside academics, I'm into music: guitar, exploring guitar tones, effects, and audio technology. I enjoy experimenting with new ideas, solving technical problems, and developing creative projects that combine technology and music.",
+    "I'm an BSIT student from University of San Agustin in Iloilo City, Philippines, passionate about technology, programming, and cybersecurity. I have a strong interest in learning how things work — and in building practical projects that put that understanding to use.",
+    "Outside academics, I'm into music, guitar, and audio technology. I enjoy experimenting with new ideas, solving technical problems, and developing creative projects.",
   ],
-  currentlyLearning: ["Cybersecurity fundamentals", "Flutter & mobile dev", "Audio tech & DSP"],
+  currentlyLearning: ["Cybersecurity fundamentals", "Flutter & mobile dev", "Software & Web Dev", "Audio tech & DSP"],
   funFacts: [
-    "I chase the perfect guitar tone — it's a journey, not a destination",
+    "I'm a Session Musician (Guitarist) playing in various events such as Fiestas, Birthdays, and Wedding Gigs",
     "Cybersecurity fascinates me: how systems break, and how to fix them",
     "I take things apart to see how they work (they usually go back together)",
-    "My projects keep crashing into my hobbies — tech × music",
   ],
   stats: [
     { value: "5", label: "Projects Built" },
@@ -98,7 +97,7 @@ export const defaultTechStack: TechItem[] = [
   { name: "C#", category: "Languages", img: "/tech/csharp.png" },
   { name: "SQL", category: "Databases", img: "/tech/sql.png" },
   { name: "SQLite", category: "Databases", img: "/tech/sqlite.png" },
-  { name: "Firebase", category: "Databases", img: "/tech/firebase.svg" },
+  { name: "Firebase", category: "Databases", img: "/tech/firebase.png" },
   { name: "Flutter", category: "Frameworks", img: "/tech/flutter.png" },
   { name: "React", category: "Frameworks", img: "/tech/react.png" },
   { name: "Vite", category: "Frameworks", img: "/tech/vite.webp" },
@@ -149,7 +148,7 @@ export const projects: Project[] = [
   {
     name: "Mindful Minute",
     description:
-      "A wellbeing app that reminds you to take mindful breaks. Runs a persistent Android background monitoring service (Kotlin) so reminders survive even when the app is swiped away — refined through 8 releases, with an in-app FAQ and feedback flow.",
+      "A wellness app designed to prevent doomscrolling through mindful breaks. It features 10 one-minute mini-games, motivational wellness reminders with helpful facts and Bible verses, and one-minute breathing sessions. Its persistent Android background monitoring service (Kotlin) ensures reminders continue even when the app is closed and blocks apps that reach their usage limits until users complete their selected wellness activities.",
     tech: ["Flutter", "Dart", "Kotlin", "Android"],
     year: "2026",
     github: "https://github.com/nonoyj/Mindful-Minute",
@@ -171,7 +170,7 @@ export const projects: Project[] = [
     description:
       "A warehouse inventory management system built as a DBMS2 course requirement — a C# application with database-driven product, stock, and transaction management.",
     tech: ["C#", "SQL", "Database Design"],
-    year: "2026",
+    year: "2025",
     github: "https://github.com/nonoyj/DBMS---MyWarehouse-Inventory-Management-",
     logo: "/projects/mywarehouse.png",
   },
@@ -189,7 +188,7 @@ export const projects: Project[] = [
   {
     name: "StageFlow",
     description:
-      "A JavaScript application packaged as an installable Android APK — grab the APK straight from the repo and install it. A companion Node.js server (stageflow-server) handles the backend side.",
+      "An Android application for Musicians, helping them navigate through songs, lyrics, and setlists with AI integration to manage songs and form it into a smooth flow of setlists. Built using Cordova with DeepSeek's Kimi model API",
     tech: ["JavaScript", "CSS", "HTML", "Android APK"],
     year: "2026",
     github: "https://github.com/nonoyj/StageFlow",
@@ -209,13 +208,6 @@ export interface ExperienceItem {
 export const defaultExperiences: ExperienceItem[] = [
   {
     date: "2026",
-    role: "Developer — StageFlow",
-    org: "JavaScript · Android APK",
-    description:
-      "Building StageFlow — a JavaScript application packaged as an installable Android APK, backed by a companion Node.js server.",
-  },
-  {
-    date: "2026",
     role: "Developer — M-Gear Iloilo",
     org: "React · TypeScript · Vite",
     description:
@@ -226,17 +218,24 @@ export const defaultExperiences: ExperienceItem[] = [
     role: "Creator — Mindful Minute",
     org: "Flutter · Android (Kotlin)",
     description:
-      "Built a wellbeing app that helps people take mindful breaks — persistent background monitoring on Android, break scheduling, and 8 iterations of refinement based on real-device feedback.",
+      "Built a wellbeing app that helps people take mindful breaks and prevent 'Doom Scrolling' — persistent background monitoring on Android, break scheduling, and 8 iterations of refinement based on real-device feedback.",
   },
   {
     date: "2026",
-    role: "Team Collaboration — DevDash 2026",
+    role: "Developer — StageFlow",
+    org: "Cordova",
+    description:
+      "Building StageFlow — an Android application for Musicians, helping them navigate through songs, lyrics, and setlists with AI integration to manage songs and form it into a smooth flow of setlists. Built using Cordova Framework with DeepSeek's Kimi model API",
+  },
+  {
+    date: "2026",
+    role: "Team Collaboration — DevDash Hackathon 2026",
     org: "Team Klyxen · 'Evolverse'",
     description:
       "Collaborated on 'Evolverse' for DevDash 2026 — planning, dividing work, and shipping as a team in a shared repository.",
   },
   {
-    date: "2026",
+    date: "2025",
     role: "DBMS — MyWarehouse Inventory Management",
     org: "Database project",
     description:

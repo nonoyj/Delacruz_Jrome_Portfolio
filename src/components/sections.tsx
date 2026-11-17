@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowUp,
@@ -63,18 +63,26 @@ function SectionHead({ eyebrow, title, accent, sub }: { eyebrow: string; title: 
 }
 
 function useTypewriter(phrases: string[], speed = 62, pause = 1600) {
-  const [text, setText] = useState("");
+  /* Respect prefers-reduced-motion: render the first phrase statically. */
+  const reduced = useMemo(
+    () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false,
+    []
+  );
+  const [text, setText] = useState(reduced ? phrases[0] : "");
   const [idx, setIdx] = useState(0);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
+    if (reduced) return;
     const current = phrases[idx % phrases.length];
     let t: number | undefined;
     if (!deleting && text === current) {
       t = window.setTimeout(() => setDeleting(true), pause);
     } else if (deleting && text === "") {
-      setDeleting(false);
-      setIdx((i) => (i + 1) % phrases.length);
+      t = window.setTimeout(() => {
+        setDeleting(false);
+        setIdx((i) => (i + 1) % phrases.length);
+      }, 0);
     } else {
       t = window.setTimeout(
         () => setText(current.slice(0, text.length + (deleting ? -1 : 1))),
@@ -82,7 +90,7 @@ function useTypewriter(phrases: string[], speed = 62, pause = 1600) {
       );
     }
     return () => window.clearTimeout(t);
-  }, [text, deleting, idx, phrases, speed, pause]);
+  }, [text, deleting, idx, phrases, speed, pause, reduced]);
 
   return text;
 }
@@ -130,7 +138,7 @@ function CountUp({ value, label }: { value: string; label: string }) {
 /* ============================================================
    HERO
    ============================================================ */
-const TYPE_PHRASES = ["IT Student", "Cybersecurity Enthusiast", "Guitar Tone Chaser", "Tech × Music Builder", "Problem Solver"];
+const TYPE_PHRASES = ["IT Student", "Cybersecurity Enthusiast", "Software Developer", "Web & App Developer", "Tech × Music Enthusiast"];
 
 function ProfilePhoto() {
   const [failed, setFailed] = useState(false);
@@ -144,7 +152,7 @@ function ProfilePhoto() {
       <div className="photo-ring" />
       <div className="photo-frame">
         {!failed ? (
-          <img src={profile.photo} alt={`Portrait of ${profile.name}`} onError={() => setFailed(true)} />
+          <img src={profile.photo} alt={`Portrait of ${profile.name}`} fetchPriority="high" decoding="async" onError={() => setFailed(true)} />
         ) : (
           <div className="photo-fallback">JD</div>
         )}
@@ -154,7 +162,7 @@ function ProfilePhoto() {
         animate={{ y: [0, -9, 0] }}
         transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
       >
-        <Guitar size={14} /> audio tech
+        <Puzzle size={14} /> software dev
       </motion.div>
       <motion.div
         className="float-chip chip-sec"
@@ -176,7 +184,7 @@ export function Hero() {
         <div className="hero-main">
           <motion.div className="eyebrow" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
             <span className="pulse-dot" />
-            <span className="tok-com">{"// hello world, i'm"}</span>
+            <span className="tok-com">{"// hello kalibutan, i'm"}</span>
           </motion.div>
 
           <motion.h1 className="hero-name" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}>
@@ -239,8 +247,7 @@ export function About() {
           I'm an <span className="hl">IT student</span> passionate about{" "}
           <span className="hl">technology, programming, and cybersecurity</span> — with a strong
           interest in learning <em>how things work</em> and building practical projects. Outside
-          academics, I'm into <span className="hl hl-2">music, guitar, and audio technology</span>{" "}
-          — exploring tones, effects, and sound.
+          academics, I'm into <span className="hl hl-2">music, guitar, and audio technology.</span>
         </motion.p>
 
         <div className="about-grid">
@@ -405,7 +412,7 @@ export function Projects() {
                       rel="noopener noreferrer"
                       title={p.live ? `Open ${p.name}` : `${p.name} on GitHub`}
                     >
-                      <img src={p.logo} alt={`${p.name} logo`} loading="lazy" />
+                      <img src={p.logo} alt={`${p.name} logo`} loading="lazy" decoding="async" />
                     </a>
                   ) : (
                     <div className="project-icon"><Icon size={20} /></div>
@@ -511,7 +518,7 @@ export function Education({ content }: { content: EditableContent }) {
                         rel="noopener noreferrer"
                         title={c.link ? "View PDF credential" : "View certificate"}
                       >
-                        <img src={c.image} alt={`${c.name} certificate`} loading="lazy" />
+                        <img src={c.image} alt={`${c.name} certificate`} loading="lazy" decoding="async" />
                       </a>
                     )}
                     <div className="cert-body">
@@ -546,14 +553,28 @@ export function Contact() {
   const [status, setStatus] = useState<{ kind: "success" | "error" | "sending"; msg: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [honey, setHoney] = useState("");
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
   /* Sends directly to J'rome's inbox via FormSubmit (formsubmit.co/ajax).
      First-ever submission triggers a one-time activation email; after that,
-     every message lands straight in delacruzjrome@gmail.com. */
+     every message lands straight in delacruzjrome@gmail.com.
+     The hidden "_honey" field is a spam trap — bots fill it, humans never see it. */
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (honey) {
+      /* Bot detected — silently pretend success so it learns nothing. */
+      setForm({ name: "", email: "", message: "" });
+      setStatus({ kind: "success", msg: "Message sent! I'll get back to you soon. ✓" });
+      return;
+    }
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       setStatus({ kind: "error", msg: "All fields are required — even the fun ones." });
+      return;
+    }
+    if (!EMAIL_RE.test(form.email.trim())) {
+      setStatus({ kind: "error", msg: "That email doesn't look right — double-check it?" });
       return;
     }
     setStatus({ kind: "sending", msg: "// sending your message…" });
@@ -562,12 +583,13 @@ export function Contact() {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          message: form.message,
-          _subject: `Portfolio contact from ${form.name}`,
+          name: form.name.trim().slice(0, 80),
+          email: form.email.trim().slice(0, 120),
+          message: form.message.trim().slice(0, 2000),
+          _subject: `Portfolio contact from ${form.name.trim().slice(0, 80)}`,
           _template: "table",
           _captcha: "false",
+          _honey: honey,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -644,12 +666,22 @@ export function Contact() {
           </motion.div>
 
           <motion.form className="card contact-form" onSubmit={submit} {...fadeUp}>
+            <input
+              type="text"
+              name="_honey"
+              value={honey}
+              onChange={(e) => setHoney(e.target.value)}
+              className="hp-field"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+            />
             <label><span className="tok-kw">const</span> name =</label>
-            <input placeholder='"Your Name"' value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <input placeholder='"Your Name"' value={form.name} maxLength={80} autoComplete="name" onChange={(e) => setForm({ ...form, name: e.target.value })} />
             <label><span className="tok-kw">const</span> email =</label>
-            <input type="email" placeholder='"you@example.com"' value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            <input type="email" placeholder='"you@example.com"' value={form.email} maxLength={120} autoComplete="email" onChange={(e) => setForm({ ...form, email: e.target.value })} />
             <label><span className="tok-kw">const</span> message =</label>
-            <textarea rows={5} placeholder="// hi j'rome, let's work on…" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
+            <textarea rows={5} placeholder="// hi j'rome, let's work on…" value={form.message} maxLength={2000} onChange={(e) => setForm({ ...form, message: e.target.value })} />
             <button
               type="submit"
               className="btn btn-primary"
@@ -659,7 +691,7 @@ export function Contact() {
               <Send size={15} />
               {status?.kind === "sending" ? "sending…" : "send_message();"}
             </button>
-            <div className={`form-status ${status?.kind ?? ""}`}>{status?.msg}</div>
+            <div className={`form-status ${status?.kind ?? ""}`} role="status" aria-live="polite">{status?.msg}</div>
           </motion.form>
         </div>
       </div>
