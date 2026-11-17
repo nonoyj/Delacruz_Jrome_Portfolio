@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, type MotionValue } from "framer-motion";
 import {
   ArrowUp,
   Award,
@@ -7,7 +7,6 @@ import {
   Bike,
   Warehouse,
   Siren,
-  ChevronDown,
   Copy,
   Check,
   Download,
@@ -28,10 +27,10 @@ import { GithubIcon, LinkedinIcon, FacebookIcon } from "./icons";
 /* ---------- shared ---------- */
 
 const fadeUp = {
-  initial: { opacity: 0, y: 26 },
-  whileInView: { opacity: 1, y: 0 },
+  initial: { opacity: 0, y: 30, filter: "blur(8px)" },
+  whileInView: { opacity: 1, y: 0, filter: "blur(0px)" },
   viewport: { once: true, margin: "-60px" },
-  transition: { duration: 0.6, ease: "easeOut" as const },
+  transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
 };
 
 const stagger = {
@@ -63,18 +62,26 @@ function SectionHead({ eyebrow, title, accent, sub }: { eyebrow: string; title: 
 }
 
 function useTypewriter(phrases: string[], speed = 62, pause = 1600) {
-  const [text, setText] = useState("");
+  /* Respect prefers-reduced-motion: render the first phrase statically. */
+  const reduced = useMemo(
+    () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false,
+    []
+  );
+  const [text, setText] = useState(reduced ? phrases[0] : "");
   const [idx, setIdx] = useState(0);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
+    if (reduced) return;
     const current = phrases[idx % phrases.length];
     let t: number | undefined;
     if (!deleting && text === current) {
       t = window.setTimeout(() => setDeleting(true), pause);
     } else if (deleting && text === "") {
-      setDeleting(false);
-      setIdx((i) => (i + 1) % phrases.length);
+      t = window.setTimeout(() => {
+        setDeleting(false);
+        setIdx((i) => (i + 1) % phrases.length);
+      }, 0);
     } else {
       t = window.setTimeout(
         () => setText(current.slice(0, text.length + (deleting ? -1 : 1))),
@@ -82,7 +89,7 @@ function useTypewriter(phrases: string[], speed = 62, pause = 1600) {
       );
     }
     return () => window.clearTimeout(t);
-  }, [text, deleting, idx, phrases, speed, pause]);
+  }, [text, deleting, idx, phrases, speed, pause, reduced]);
 
   return text;
 }
@@ -144,7 +151,7 @@ function ProfilePhoto() {
       <div className="photo-ring" />
       <div className="photo-frame">
         {!failed ? (
-          <img src={profile.photo} alt={`Portrait of ${profile.name}`} onError={() => setFailed(true)} />
+          <img src={profile.photo} alt={`Portrait of ${profile.name}`} fetchPriority="high" decoding="async" onError={() => setFailed(true)} />
         ) : (
           <div className="photo-fallback">JD</div>
         )}
@@ -216,9 +223,12 @@ export function Hero() {
         ))}
       </motion.div>
 
-      <motion.a href="#about" className="scroll-indicator" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 0.6 }}>
-        <ChevronDown size={15} className="scroll-chevron" />
-        <span>scroll</span>
+      <motion.a href="#about" className="scroll-indicator" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 0.6 }} aria-label="Scroll to About section">
+        <span className="si-text">scroll</span>
+        <span className="si-track" aria-hidden="true">
+          <span className="si-thumb" />
+        </span>
+        <span className="si-text">scroll</span>
       </motion.a>
     </section>
   );
@@ -239,7 +249,7 @@ export function About() {
           I'm an <span className="hl">IT student</span> passionate about{" "}
           <span className="hl">technology, programming, and cybersecurity</span> — with a strong
           interest in learning <em>how things work</em> and building practical projects. Outside
-          academics, I'm into <span className="hl hl-2">music, guitar, and audio technology.</span>{" "}
+          academics, I'm into <span className="hl hl-2">music, guitar, and audio technology.</span>
         </motion.p>
 
         <div className="about-grid">
@@ -404,7 +414,7 @@ export function Projects() {
                       rel="noopener noreferrer"
                       title={p.live ? `Open ${p.name}` : `${p.name} on GitHub`}
                     >
-                      <img src={p.logo} alt={`${p.name} logo`} loading="lazy" />
+                      <img src={p.logo} alt={`${p.name} logo`} loading="lazy" decoding="async" />
                     </a>
                   ) : (
                     <div className="project-icon"><Icon size={20} /></div>
@@ -510,7 +520,7 @@ export function Education({ content }: { content: EditableContent }) {
                         rel="noopener noreferrer"
                         title={c.link ? "View PDF credential" : "View certificate"}
                       >
-                        <img src={c.image} alt={`${c.name} certificate`} loading="lazy" />
+                        <img src={c.image} alt={`${c.name} certificate`} loading="lazy" decoding="async" />
                       </a>
                     )}
                     <div className="cert-body">
@@ -545,14 +555,28 @@ export function Contact() {
   const [status, setStatus] = useState<{ kind: "success" | "error" | "sending"; msg: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [honey, setHoney] = useState("");
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
   /* Sends directly to J'rome's inbox via FormSubmit (formsubmit.co/ajax).
      First-ever submission triggers a one-time activation email; after that,
-     every message lands straight in delacruzjrome@gmail.com. */
+     every message lands straight in delacruzjrome@gmail.com.
+     The hidden "_honey" field is a spam trap — bots fill it, humans never see it. */
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (honey) {
+      /* Bot detected — silently pretend success so it learns nothing. */
+      setForm({ name: "", email: "", message: "" });
+      setStatus({ kind: "success", msg: "Message sent! I'll get back to you soon. ✓" });
+      return;
+    }
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       setStatus({ kind: "error", msg: "All fields are required — even the fun ones." });
+      return;
+    }
+    if (!EMAIL_RE.test(form.email.trim())) {
+      setStatus({ kind: "error", msg: "That email doesn't look right — double-check it?" });
       return;
     }
     setStatus({ kind: "sending", msg: "// sending your message…" });
@@ -561,12 +585,13 @@ export function Contact() {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          message: form.message,
-          _subject: `Portfolio contact from ${form.name}`,
+          name: form.name.trim().slice(0, 80),
+          email: form.email.trim().slice(0, 120),
+          message: form.message.trim().slice(0, 2000),
+          _subject: `Portfolio contact from ${form.name.trim().slice(0, 80)}`,
           _template: "table",
           _captcha: "false",
+          _honey: honey,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -643,12 +668,22 @@ export function Contact() {
           </motion.div>
 
           <motion.form className="card contact-form" onSubmit={submit} {...fadeUp}>
+            <input
+              type="text"
+              name="_honey"
+              value={honey}
+              onChange={(e) => setHoney(e.target.value)}
+              className="hp-field"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+            />
             <label><span className="tok-kw">const</span> name =</label>
-            <input placeholder='"Your Name"' value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <input placeholder='"Your Name"' value={form.name} maxLength={80} autoComplete="name" onChange={(e) => setForm({ ...form, name: e.target.value })} />
             <label><span className="tok-kw">const</span> email =</label>
-            <input type="email" placeholder='"you@example.com"' value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            <input type="email" placeholder='"you@example.com"' value={form.email} maxLength={120} autoComplete="email" onChange={(e) => setForm({ ...form, email: e.target.value })} />
             <label><span className="tok-kw">const</span> message =</label>
-            <textarea rows={5} placeholder="// hi j'rome, let's work on…" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
+            <textarea rows={5} placeholder="// hi j'rome, let's work on…" value={form.message} maxLength={2000} onChange={(e) => setForm({ ...form, message: e.target.value })} />
             <button
               type="submit"
               className="btn btn-primary"
@@ -658,7 +693,7 @@ export function Contact() {
               <Send size={15} />
               {status?.kind === "sending" ? "sending…" : "send_message();"}
             </button>
-            <div className={`form-status ${status?.kind ?? ""}`}>{status?.msg}</div>
+            <div className={`form-status ${status?.kind ?? ""}`} role="status" aria-live="polite">{status?.msg}</div>
           </motion.form>
         </div>
       </div>
@@ -669,14 +704,24 @@ export function Contact() {
 /* ============================================================
    FOOTER
    ============================================================ */
-export function Footer({ onTop }: { onTop: () => void }) {
+export function Footer({ onTop, progress }: { onTop: () => void; progress: MotionValue<number> }) {
   return (
     <footer className="footer">
       <div className="wrap footer-inner">
         <div className="footer-note tok-com">{"// designed & built by J'rome A. De la Cruz — React + TypeScript"}</div>
         <div className="footer-actions">
-          <button type="button" className="top-btn" onClick={onTop} title="Back to top">
-            <ArrowUp size={15} />
+          <button type="button" className="top-btn" onClick={onTop} title="Back to top" aria-label="Back to top">
+            <svg className="top-ring" viewBox="0 0 36 36" aria-hidden="true">
+              <circle className="top-ring-bg" cx="18" cy="18" r="16" />
+              <motion.circle
+                className="top-ring-fg"
+                cx="18"
+                cy="18"
+                r="16"
+                style={{ pathLength: progress }}
+              />
+            </svg>
+            <ArrowUp size={15} className="top-arrow" />
           </button>
         </div>
       </div>

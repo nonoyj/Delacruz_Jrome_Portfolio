@@ -23,9 +23,9 @@ export const profile = {
     "I'm an BSIT student from University of San Agustin in Iloilo City, Philippines, passionate about technology, programming, and cybersecurity. I have a strong interest in learning how things work — and in building practical projects that put that understanding to use.",
     "Outside academics, I'm into music, guitar, and audio technology. I enjoy experimenting with new ideas, solving technical problems, and developing creative projects.",
   ],
-  currentlyLearning: ["Cybersecurity fundamentals", "Flutter & mobile dev", "Software & Web Dev","Audio tech & DSP"],
+  currentlyLearning: ["Cybersecurity fundamentals", "Flutter & mobile dev", "Software & Web Dev", "Audio tech & DSP"],
   funFacts: [
-    "I'm a Session Musician (Guitarist) playing in variuos events such as Fiesta's, Birthday, and Wedding Gigs",
+    "I'm a Session Musician (Guitarist) playing in various events such as Fiestas, Birthdays, and Wedding Gigs",
     "Cybersecurity fascinates me: how systems break, and how to fix them",
     "I take things apart to see how they work (they usually go back together)",
   ],
@@ -97,7 +97,7 @@ export const defaultTechStack: TechItem[] = [
   { name: "C#", category: "Languages", img: "/tech/csharp.png" },
   { name: "SQL", category: "Databases", img: "/tech/sql.png" },
   { name: "SQLite", category: "Databases", img: "/tech/sqlite.png" },
-  { name: "Firebase", category: "Databases", icon: "/tech/firebase.png" },
+  { name: "Firebase", category: "Databases", img: "/tech/firebase.png" },
   { name: "Flutter", category: "Frameworks", img: "/tech/flutter.png" },
   { name: "React", category: "Frameworks", img: "/tech/react.png" },
   { name: "Vite", category: "Frameworks", img: "/tech/vite.webp" },
@@ -109,6 +109,7 @@ export const defaultTechStack: TechItem[] = [
   { name: "Git & GitHub", category: "Web & Tools", img: "/tech/git-github.png" },
   { name: "Android", category: "Web & Tools", img: "/tech/android.webp" },
   { name: "VS Code", category: "Web & Tools", img: "/tech/vscode.webp" },
+  { name: "Cisco Packet Tracer", category: "Web & Tools", img: "/tech/cisco-packet-tracer.webp" },
 ];
 
 /* ---------------- Certifications ---------------- */
@@ -117,7 +118,7 @@ export interface Certification {
   issuer: string;
   year: string;
   link?: string; // PDF credential
-  image?: string; // certificate image
+  image?: string; // certificate image (shown on the card)
 }
 
 export const defaultCertifications: Certification[] = [
@@ -130,6 +131,7 @@ export const defaultCertifications: Certification[] = [
   },
 ];
 
+/* ---------------- Projects (real — from github.com/nonoyj) ---------------- */
 export interface Project {
   name: string;
   description: string;
@@ -186,7 +188,7 @@ export const projects: Project[] = [
   {
     name: "StageFlow",
     description:
-      " an Android application for Musicians, helping them navigate through songs, lyrics, and setlists with AI integration to manage songs and form it into a smooth flow of setlists. Built using Cordova with DeepSeek's Kimi model API",
+      "An Android application for Musicians, helping them navigate through songs, lyrics, and setlists with AI integration to manage songs and form it into a smooth flow of setlists. Built using Cordova with DeepSeek's Kimi model API",
     tech: ["JavaScript", "CSS", "HTML", "Android APK"],
     year: "2026",
     github: "https://github.com/nonoyj/StageFlow",
@@ -204,7 +206,6 @@ export interface ExperienceItem {
 }
 
 export const defaultExperiences: ExperienceItem[] = [
-  
   {
     date: "2026",
     role: "Developer — M-Gear Iloilo",
