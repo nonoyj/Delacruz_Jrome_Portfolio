@@ -1,11 +1,9 @@
 /* ============================================================
    PORTFOLIO CONTENT — EDIT THIS FILE
    ------------------------------------------------------------
-   Everything on the site reads from here. Skills, tech stack,
-   certifications, experiences and education can also be edited
-   live via Editor Mode (click the person icon in the activity
-   bar or Ctrl+K → "Enter Editor Mode") — those edits save to
-   your browser. To publish for everyone, edit this file.
+   Everything on the site reads from here. Replace / add
+   projects, skills, certifications, experiences and education
+   and the whole site updates automatically.
    ============================================================ */
 
 export const profile = {
@@ -33,9 +31,9 @@ export const profile = {
     "My projects keep crashing into my hobbies — tech × music",
   ],
   stats: [
-    { value: "4", label: "Projects Built" },
+    { value: "5", label: "Projects Built" },
     { value: "15+", label: "Technologies" },
-    { value: "3", label: "Public Repos" },
+    { value: "4", label: "Public Repos" },
     { value: "∞", label: "Riffs Jammed" },
   ],
   socials: {
@@ -111,9 +109,7 @@ export const defaultTechStack: TechItem[] = [
   { name: "Android", category: "Web & Tools", icon: "android" },
 ];
 
-/* ---------------- Certifications (editable in Editor Mode) ----------------
-   Empty by default — add yours in Editor Mode (person icon in the activity
-   bar), or directly here. */
+/* ---------------- Certifications ---------------- */
 export interface Certification {
   name: string;
   issuer: string;
@@ -121,7 +117,14 @@ export interface Certification {
   link?: string;
 }
 
-export const defaultCertifications: Certification[] = [];
+export const defaultCertifications: Certification[] = [
+  {
+    name: "Getting Started with Cisco Packet Tracer",
+    issuer: "Cisco Networking Academy",
+    year: "2026",
+    link: "/certs/cisco-packet-tracer.pdf",
+  },
+];
 
 /* ---------------- Projects (real — from github.com/nonoyj) ---------------- */
 export interface Project {
@@ -131,6 +134,7 @@ export interface Project {
   year: string;
   github: string;
   live?: string;
+  apk?: string; // direct download link for an installable .apk
   collab?: boolean;
 }
 
@@ -142,6 +146,7 @@ export const projects: Project[] = [
     tech: ["Flutter", "Dart", "Kotlin", "Android"],
     year: "2026",
     github: "https://github.com/nonoyj/Mindful-Minute",
+    apk: "https://drive.google.com/uc?export=download&id=1D_61a1qP_zscE25Ob7ozHr55_QZ6C6kC",
   },
   {
     name: "M-Gear Iloilo",
@@ -169,6 +174,15 @@ export const projects: Project[] = [
     live: "https://emergeng.netlify.app/",
     collab: true,
   },
+  {
+    name: "StageFlow",
+    description:
+      "A JavaScript application packaged as an installable Android APK — grab the APK straight from the repo and install it. A companion Node.js server (stageflow-server) handles the backend side.",
+    tech: ["JavaScript", "CSS", "HTML", "Android APK"],
+    year: "2026",
+    github: "https://github.com/nonoyj/StageFlow",
+    apk: "https://github.com/nonoyj/StageFlow/raw/main/stageflow.apk",
+  },
 ];
 
 /* ---------------- Experiences (editable in Editor Mode) ---------------- */
@@ -180,6 +194,13 @@ export interface ExperienceItem {
 }
 
 export const defaultExperiences: ExperienceItem[] = [
+  {
+    date: "2026",
+    role: "Developer — StageFlow",
+    org: "JavaScript · Android APK",
+    description:
+      "Building StageFlow — a JavaScript application packaged as an installable Android APK, backed by a companion Node.js server.",
+  },
   {
     date: "2026",
     role: "Developer — M-Gear Iloilo",
@@ -229,13 +250,13 @@ export const defaultEducation: EducationItem[] = [
   {
     period: "Present",
     degree: "BS Information Technology",
-    school: "Iloilo City, Philippines", // ← add your school's name (Editor Mode)
+    school: "University of San Agustin — Iloilo City",
     description:
       "Pursuing my IT degree — focused on programming, databases, and cybersecurity, with coursework spanning web systems, data structures, and networking.",
   },
 ];
 
-/* ---------------- Bundle of Editor Mode-editable content ---------------- */
+/* ---------------- Content bundle used by the site ---------------- */
 export interface EditableContent {
   skills: SkillCategory[];
   techStack: TechItem[];

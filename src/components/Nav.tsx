@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Menu, X, LockKeyhole } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { GithubIcon, LinkedinIcon, FacebookIcon } from "./icons";
 import { profile } from "../data/portfolio";
 
@@ -16,10 +16,9 @@ const LABELS: Record<SectionId, string> = {
 
 interface Props {
   active: SectionId | "home";
-  onEditorClick: () => void;
 }
 
-export default function Nav({ active, onEditorClick }: Props) {
+export default function Nav({ active }: Props) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -47,17 +46,6 @@ export default function Nav({ active, onEditorClick }: Props) {
             <span className="nav-num">0{SECTION_IDS.indexOf(id) + 1}.</span> {LABELS[id]}
           </a>
         ))}
-        <button
-          type="button"
-          className="nav-editor"
-          onClick={() => {
-            setOpen(false);
-            onEditorClick();
-          }}
-          title="Editor Mode (J'rome only)"
-        >
-          <LockKeyhole size={13} /> Editor
-        </button>
       </nav>
 
       <div className="nav-socials">

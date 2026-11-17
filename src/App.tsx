@@ -1,53 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, useMotionValue, useScroll, useSpring } from "framer-motion";
 import Nav, { SECTION_IDS, type SectionId } from "./components/Nav";
-import { Hero, About, Stack, Experience, Projects, Education, Contact, Footer, EditorModal } from "./components/sections";
-import EditorGate from "./components/EditorGate";
-import { useContent } from "./hooks/useContent";
+import { Hero, About, Stack, Experience, Projects, Education, Contact, Footer } from "./components/sections";
+import { defaultContent } from "./data/portfolio";
 
 export default function App() {
-  const { content, save, reset, hasOverrides } = useContent();
-
-  /* Editor Mode (admin) */
-  const [editorUnlocked, setEditorUnlocked] = useState(false);
-  const [gateOpen, setGateOpen] = useState(false);
-  const [editorOpen, setEditorOpen] = useState(false);
-
-  const handleEnterEditor = useCallback(() => {
-    if (editorUnlocked) setEditorOpen(true);
-    else setGateOpen(true);
-  }, [editorUnlocked]);
-
-  const handleUnlock = useCallback(() => {
-    setEditorUnlocked(true);
-    setGateOpen(false);
-    setEditorOpen(true);
-  }, []);
-
-  const handleExitEditor = useCallback(() => {
-    setEditorUnlocked(false);
-    setEditorOpen(false);
-  }, []);
-
-  /* lock page scroll while a modal is open */
-  useEffect(() => {
-    const locked = gateOpen || editorOpen;
-    document.body.style.overflow = locked ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [gateOpen, editorOpen]);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setGateOpen(false);
-        setEditorOpen(false);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  const content = defaultContent;
 
   /* scroll progress bar */
   const { scrollYProgress } = useScroll();
@@ -93,7 +51,7 @@ export default function App() {
       <motion.div className="cursor-glow" style={{ x: mx, y: my }} aria-hidden="true" />
       <motion.div className="progress-bar" style={{ scaleX: progress }} aria-hidden="true" />
 
-      <Nav active={active} onEditorClick={handleEnterEditor} />
+      <Nav active={active} />
 
       <main>
         <Hero />
@@ -101,23 +59,11 @@ export default function App() {
         <Stack content={content} />
         <Experience content={content} />
         <Projects />
-        <Education content={content} onEnterEditor={handleEnterEditor} />
+        <Education content={content} />
         <Contact />
       </main>
 
-      <Footer onEditorClick={handleEnterEditor} onTop={() => window.scrollTo({ top: 0, behavior: "smooth" })} />
-
-      <EditorModal
-        open={editorOpen}
-        content={content}
-        save={save}
-        reset={reset}
-        hasOverrides={hasOverrides}
-        onClose={() => setEditorOpen(false)}
-        onExit={handleExitEditor}
-      />
-
-      <EditorGate open={gateOpen} onClose={() => setGateOpen(false)} onUnlock={handleUnlock} />
+      <Footer onTop={() => window.scrollTo({ top: 0, behavior: "smooth" })} />
     </div>
   );
 }

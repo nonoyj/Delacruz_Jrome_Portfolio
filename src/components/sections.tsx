@@ -10,6 +10,7 @@ import {
   ChevronDown,
   Copy,
   Check,
+  Download,
   ExternalLink,
   Mail,
   MapPin,
@@ -19,12 +20,10 @@ import {
   ShieldCheck,
   Puzzle,
   Music,
-  LockKeyhole,
 } from "lucide-react";
 import { profile, projects } from "../data/portfolio";
 import type { EditableContent } from "../data/portfolio";
 import { GithubIcon, LinkedinIcon, FacebookIcon } from "./icons";
-import EditorView from "./EditorView";
 
 /* ---------- shared ---------- */
 
@@ -396,6 +395,11 @@ export function Projects() {
                         <ExternalLink size={16} />
                       </a>
                     )}
+                    {p.apk && (
+                      <a href={p.apk} target="_blank" rel="noopener noreferrer" title="Download APK" className="apk-link">
+                        <Download size={16} />
+                      </a>
+                    )}
                     <a href={p.github} target="_blank" rel="noopener noreferrer" title="Source code">
                       <GithubIcon size={16} />
                     </a>
@@ -409,7 +413,14 @@ export function Projects() {
                 <div className="project-tags">
                   {p.tech.map((t) => <span key={t} className="tag">{t}</span>)}
                 </div>
-                <div className="project-year">{"// shipped " + p.year}</div>
+                <div className="project-footer">
+                  <div className="project-year">{"// shipped " + p.year}</div>
+                  {p.apk && (
+                    <a className="apk-btn" href={p.apk} target="_blank" rel="noopener noreferrer">
+                      <Download size={14} /> Download APK
+                    </a>
+                  )}
+                </div>
               </motion.article>
             );
           })}
@@ -428,7 +439,7 @@ export function Projects() {
 /* ============================================================
    EDUCATION + CERTIFICATIONS
    ============================================================ */
-export function Education({ content, onEnterEditor }: { content: EditableContent; onEnterEditor: () => void }) {
+export function Education({ content }: { content: EditableContent }) {
   return (
     <section id="education" className="section">
       <div className="wrap">
@@ -465,13 +476,7 @@ export function Education({ content, onEnterEditor }: { content: EditableContent
               <motion.div className="certs-empty" {...fadeUp}>
                 <Award size={30} />
                 <div className="certs-empty-title">No certifications listed yet</div>
-                <p>
-                  J'rome can add them in <strong>Editor Mode</strong>, or by editing{" "}
-                  <code>src/data/portfolio.ts</code> directly.
-                </p>
-                <button type="button" className="btn btn-primary" onClick={onEnterEditor}>
-                  <LockKeyhole size={15} /> Enter Editor Mode
-                </button>
+                <p>More credentials coming soon — check back!</p>
               </motion.div>
             ) : (
               <motion.div className="certs-grid" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-40px" }}>
@@ -594,15 +599,12 @@ export function Contact() {
 /* ============================================================
    FOOTER
    ============================================================ */
-export function Footer({ onEditorClick, onTop }: { onEditorClick: () => void; onTop: () => void }) {
+export function Footer({ onTop }: { onTop: () => void }) {
   return (
     <footer className="footer">
       <div className="wrap footer-inner">
         <div className="footer-note tok-com">{"// designed & built by J'rome A. De la Cruz — React + TypeScript"}</div>
         <div className="footer-actions">
-          <button type="button" className="footer-editor" onClick={onEditorClick} title="Editor Mode (J'rome only)">
-            <LockKeyhole size={12} /> editor login
-          </button>
           <button type="button" className="top-btn" onClick={onTop} title="Back to top">
             <ArrowUp size={15} />
           </button>
@@ -612,38 +614,4 @@ export function Footer({ onEditorClick, onTop }: { onEditorClick: () => void; on
   );
 }
 
-/* ============================================================
-   Editor Mode modal (passcode-gated)
-   ============================================================ */
-export function EditorModal({
-  open,
-  content,
-  save,
-  reset,
-  hasOverrides,
-  onClose,
-  onExit,
-}: {
-  open: boolean;
-  content: EditableContent;
-  save: (patch: Partial<EditableContent>) => void;
-  reset: () => void;
-  hasOverrides: boolean;
-  onClose: () => void;
-  onExit: () => void;
-}) {
-  if (!open) return null;
-  return (
-    <div className="editor-overlay" role="dialog" aria-modal="true" onClick={onClose}>
-      <div className="editor-modal" onClick={(e) => e.stopPropagation()}>
-        <EditorView
-          content={content}
-          save={save}
-          reset={reset}
-          hasOverrides={hasOverrides}
-          onExit={onExit}
-        />
-      </div>
-    </div>
-  );
-}
+/* (Editor Mode removed — all content is managed in src/data/portfolio.ts) */
