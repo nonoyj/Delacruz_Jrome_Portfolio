@@ -1,0 +1,285 @@
+/* ============================================================
+   PORTFOLIO CONTENT — EDIT THIS FILE
+   ------------------------------------------------------------
+   Everything on the site reads from here. Replace / add
+   projects, skills, certifications, experiences and education
+   and the whole site updates automatically.
+   ============================================================ */
+
+export const profile = {
+  name: "J'rome A. De la Cruz",
+  firstName: "J'rome",
+  role: "IT Student",
+  location: "Iloilo City, Philippines",
+  email: "delacruzjrome@gmail.com",
+  availability: "Open to internships & freelance work",
+  /* Photo shown on the landing page. Using the GitHub profile picture for
+     now — to use another photo, drop it in the `public/` folder (e.g.
+     public/me.jpg) and change this to "/me.jpg". */
+  photo: "https://avatars.githubusercontent.com/u/269455933?v=4",
+  tagline:
+    "I turn curiosity into code and ideas into working software — where technology meets music.",
+  bio: [
+    "I'm an BSIT student from University of San Agustin in Iloilo City, Philippines, passionate about technology, programming, and cybersecurity. I have a strong interest in learning how things work — and in building practical projects that put that understanding to use.",
+    "Outside academics, I'm into music, guitar, and audio technology. I enjoy experimenting with new ideas, solving technical problems, and developing creative projects.",
+  ],
+  currentlyLearning: ["Cybersecurity fundamentals", "Flutter & mobile dev", "Software & Web Dev","Audio tech & DSP"],
+  funFacts: [
+    "I'm a Session Musician (Guitarist) playing in variuos events such as Fiesta's, Birthday, and Wedding Gigs",
+    "Cybersecurity fascinates me: how systems break, and how to fix them",
+    "I take things apart to see how they work (they usually go back together)",
+  ],
+  stats: [
+    { value: "5", label: "Projects Built" },
+    { value: "15+", label: "Technologies" },
+    { value: "4", label: "Public Repos" },
+    { value: "∞", label: "Riffs Jammed" },
+  ],
+  socials: {
+    github: "https://github.com/nonoyj",
+    linkedin: "https://www.linkedin.com/in/j-rome-de-la-cruz-ab3543446",
+    facebook: "https://facebook.com/hicbazzuka",
+  },
+};
+
+/*/* ---------------- Skills ---------------- */
+export interface SkillCategory {
+  title: string;
+  skills: { name: string; level: number }[]; // level: 0–100
+}
+
+export const defaultSkills: SkillCategory[] = [
+  {
+    title: "Languages",
+    skills: [
+      { name: "Dart", level: 75 },
+      { name: "TypeScript", level: 70 },
+      { name: "JavaScript", level: 72 },
+      { name: "Python", level: 60 },
+      { name: "C#", level: 58 },
+      { name: "SQL", level: 62 },
+      { name: "HTML / CSS", level: 85 },
+    ],
+  },
+  {
+    title: "Frameworks & Runtime",
+    skills: [
+      { name: "Flutter", level: 75 },
+      { name: "React", level: 68 },
+      { name: "Vite", level: 72 },
+      { name: "Node.js", level: 60 },
+    ],
+  },
+  {
+    title: "Mobile, Tools & Security",
+    skills: [
+      { name: "Android (Kotlin)", level: 55 },
+      { name: "Git & GitHub", level: 78 },
+      { name: "Responsive Design", level: 80 },
+      { name: "Cybersecurity Fundamentals", level: 55 },
+    ],
+  },
+];
+
+/* ---------------- Tech stack ---------------- */
+export interface TechItem {
+  name: string;
+  category: string;
+  img?: string; // local logo in public/tech/ (takes precedence)
+  icon?: string; // devicon slug fallback (https://devicon.dev)
+}
+
+export const defaultTechStack: TechItem[] = [
+  { name: "Dart", category: "Languages", img: "/tech/dart.png" },
+  { name: "TypeScript", category: "Languages", img: "/tech/typescript.png" },
+  { name: "JavaScript", category: "Languages", img: "/tech/javascript.png" },
+  { name: "Python", category: "Languages", img: "/tech/python.png" },
+  { name: "C#", category: "Languages", img: "/tech/csharp.png" },
+  { name: "SQL", category: "Databases", img: "/tech/sql.png" },
+  { name: "SQLite", category: "Databases", img: "/tech/sqlite.png" },
+  { name: "Firebase", category: "Databases", icon: "/tech/firebase.png" },
+  { name: "Flutter", category: "Frameworks", img: "/tech/flutter.png" },
+  { name: "React", category: "Frameworks", img: "/tech/react.png" },
+  { name: "Vite", category: "Frameworks", img: "/tech/vite.webp" },
+  { name: "Node.js", category: "Frameworks", img: "/tech/nodejs.webp" },
+  { name: "Kotlin", category: "Frameworks", img: "/tech/kotlin.png" },
+  { name: "HTML5", category: "Web & Tools", img: "/tech/html5.webp" },
+  { name: "CSS3", category: "Web & Tools", img: "/tech/css3.webp" },
+  { name: "Tailwind CSS", category: "Web & Tools", img: "/tech/tailwind.webp" },
+  { name: "Git & GitHub", category: "Web & Tools", img: "/tech/git-github.png" },
+  { name: "Android", category: "Web & Tools", img: "/tech/android.webp" },
+  { name: "VS Code", category: "Web & Tools", img: "/tech/vscode.webp" },
+];
+
+/* ---------------- Certifications ---------------- */
+export interface Certification {
+  name: string;
+  issuer: string;
+  year: string;
+  link?: string; // PDF credential
+  image?: string; // certificate image
+}
+
+export const defaultCertifications: Certification[] = [
+  {
+    name: "Getting Started with Cisco Packet Tracer",
+    issuer: "Cisco Networking Academy",
+    year: "2026",
+    link: "/certs/cisco-packet-tracer.pdf",
+    image: "/certs/cisco-packet-tracer.png",
+  },
+];
+
+export interface Project {
+  name: string;
+  description: string;
+  tech: string[];
+  year: string;
+  github: string;
+  live?: string;
+  apk?: string; // direct download link for an installable .apk
+  logo?: string; // project logo image (shown on the card)
+  collab?: boolean;
+}
+
+export const projects: Project[] = [
+  {
+    name: "Mindful Minute",
+    description:
+      "A wellness app designed to prevent doomscrolling through mindful breaks. It features 10 one-minute mini-games, motivational wellness reminders with helpful facts and Bible verses, and one-minute breathing sessions. Its persistent Android background monitoring service (Kotlin) ensures reminders continue even when the app is closed and blocks apps that reach their usage limits until users complete their selected wellness activities.",
+    tech: ["Flutter", "Dart", "Kotlin", "Android"],
+    year: "2026",
+    github: "https://github.com/nonoyj/Mindful-Minute",
+    apk: "https://drive.google.com/uc?export=download&id=1D_61a1qP_zscE25Ob7ozHr55_QZ6C6kC",
+    logo: "/projects/mindful-minute.png",
+  },
+  {
+    name: "M-Gear Iloilo",
+    description:
+      "A responsive web application for M-Gear Iloilo, built with a component-driven React + TypeScript architecture and Vite tooling.",
+    tech: ["React", "TypeScript", "Vite", "CSS"],
+    year: "2026",
+    github: "https://github.com/nonoyj/M-Gear-Iloilo",
+    live: "https://it314-final-delacruz.netlify.app/",
+    logo: "/projects/mgear.png",
+  },
+  {
+    name: "MyWarehouse Inventory",
+    description:
+      "A warehouse inventory management system built as a DBMS2 course requirement — a C# application with database-driven product, stock, and transaction management.",
+    tech: ["C#", "SQL", "Database Design"],
+    year: "2025",
+    github: "https://github.com/nonoyj/DBMS---MyWarehouse-Inventory-Management-",
+    logo: "/projects/mywarehouse.png",
+  },
+  {
+    name: "Emergen",
+    description:
+      "A community emergency-alert web app for Iloilo City, built with Team Klyxen for DevDash 2026. Post disaster alerts (fire, flood, earthquake, typhoon…), verify reports in real time, and keep reporting even offline with a dedicated offline mode.",
+    tech: ["Web App", "Realtime", "Offline Mode"],
+    year: "2026",
+    github: "https://github.com/Klyxen/DevDash2026-Evolverse",
+    live: "https://emergeng.netlify.app/",
+    logo: "/projects/emergen.png",
+    collab: true,
+  },
+  {
+    name: "StageFlow",
+    description:
+      " an Android application for Musicians, helping them navigate through songs, lyrics, and setlists with AI integration to manage songs and form it into a smooth flow of setlists. Built using Cordova with DeepSeek's Kimi model API",
+    tech: ["JavaScript", "CSS", "HTML", "Android APK"],
+    year: "2026",
+    github: "https://github.com/nonoyj/StageFlow",
+    apk: "https://github.com/nonoyj/StageFlow/raw/main/stageflow.apk",
+    logo: "/projects/stageflow.png",
+  },
+];
+
+/*/* ---------------- Experiences ---------------- */
+export interface ExperienceItem {
+  date: string;
+  role: string;
+  org: string;
+  description: string;
+}
+
+export const defaultExperiences: ExperienceItem[] = [
+  
+  {
+    date: "2026",
+    role: "Developer — M-Gear Iloilo",
+    org: "React · TypeScript · Vite",
+    description:
+      "Developing a responsive web app for M-Gear Iloilo with a component-driven architecture and typed data models.",
+  },
+  {
+    date: "2026",
+    role: "Creator — Mindful Minute",
+    org: "Flutter · Android (Kotlin)",
+    description:
+      "Built a wellbeing app that helps people take mindful breaks and prevent 'Doom Scrolling' — persistent background monitoring on Android, break scheduling, and 8 iterations of refinement based on real-device feedback.",
+  },
+  {
+    date: "2026",
+    role: "Developer — StageFlow",
+    org: "Cordova",
+    description:
+      "Building StageFlow — an Android application for Musicians, helping them navigate through songs, lyrics, and setlists with AI integration to manage songs and form it into a smooth flow of setlists. Built using Cordova Framework with DeepSeek's Kimi model API",
+  },
+  {
+    date: "2026",
+    role: "Team Collaboration — DevDash Hackathon 2026",
+    org: "Team Klyxen · 'Evolverse'",
+    description:
+      "Collaborated on 'Evolverse' for DevDash 2026 — planning, dividing work, and shipping as a team in a shared repository.",
+  },
+  {
+    date: "2025",
+    role: "DBMS — MyWarehouse Inventory Management",
+    org: "Database project",
+    description:
+      "Designed and built a warehouse inventory management system — schema design, stock tracking, and transaction handling with SQL.",
+  },
+  {
+    date: "The spark",
+    role: "First Lines of Code",
+    org: "Self-taught",
+    description:
+      "Curiosity about how things work turned into writing code — and it hasn't stopped since.",
+  },
+];
+
+/*/* ---------------- Education ---------------- */
+export interface EducationItem {
+  period: string;
+  degree: string;
+  school: string;
+  description: string;
+}
+
+export const defaultEducation: EducationItem[] = [
+  {
+    period: "Present",
+    degree: "BS Information Technology",
+    school: "University of San Agustin — Iloilo City",
+    description:
+      "Pursuing my IT degree — focused on programming, databases, and cybersecurity, with coursework spanning web systems, data structures, and networking.",
+  },
+];
+
+/* ---------------- Content bundle used by the site ---------------- */
+export interface EditableContent {
+  skills: SkillCategory[];
+  techStack: TechItem[];
+  certifications: Certification[];
+  experiences: ExperienceItem[];
+  education: EducationItem[];
+}
+
+export const defaultContent: EditableContent = {
+  skills: defaultSkills,
+  techStack: defaultTechStack,
+  certifications: defaultCertifications,
+  experiences: defaultExperiences,
+  education: defaultEducation,
+};
