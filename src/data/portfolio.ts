@@ -1,11 +1,3 @@
-/* ============================================================
-   PORTFOLIO CONTENT — EDIT THIS FILE
-   ------------------------------------------------------------
-   Everything on the site reads from here. Replace / add
-   projects, skills, certifications, experiences and education
-   and the whole site updates automatically.
-   ============================================================ */
-
 export const profile = {
   name: "J'rome A. De la Cruz",
   firstName: "J'rome",
@@ -13,14 +5,11 @@ export const profile = {
   location: "Iloilo City, Philippines",
   email: "delacruzjrome@gmail.com",
   availability: "Open to internships & freelance work",
-  /* Photo shown on the landing page. Using the GitHub profile picture for
-     now — to use another photo, drop it in the `public/` folder (e.g.
-     public/me.jpg) and change this to "/me.jpg". */
   photo: "https://avatars.githubusercontent.com/u/269455933?v=4",
   tagline:
-    "I turn curiosity into code and ideas into working software — where technology meets music.",
+    "I turn curiosity into code and ideas into working software.",
   bio: [
-    "I'm an BSIT student from University of San Agustin in Iloilo City, Philippines, passionate about technology, programming, and cybersecurity. I have a strong interest in learning how things work — and in building practical projects that put that understanding to use.",
+    "I'm a BSIT student from University of San Agustin in Iloilo City, Philippines, passionate about technology, programming, and cybersecurity. I have a strong interest in learning how things work — and in building practical projects that put that understanding to use.",
     "Outside academics, I'm into music, guitar, and audio technology. I enjoy experimenting with new ideas, solving technical problems, and developing creative projects.",
   ],
   currentlyLearning: ["Cybersecurity fundamentals", "Flutter & mobile dev", "Software & Web Dev", "Audio tech & DSP"],

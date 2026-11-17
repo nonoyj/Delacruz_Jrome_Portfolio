@@ -197,8 +197,7 @@ export function Hero() {
           </motion.div>
 
           <motion.p className="hero-desc" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.55 }}>
-            {profile.tagline} Based in <strong>{profile.location}</strong> — studying IT, chasing
-            strong guitar tones, and learning how everything works under the hood.
+            {profile.tagline} Based in <strong>{profile.location}</strong> — studying IT and learning how everything works under the hood.
           </motion.p>
 
           <motion.div className="hero-actions" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 0.55 }}>
