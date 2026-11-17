@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, TerminalSquare, Copy, ArrowUpRight } from "lucide-react";
+import { Search, TerminalSquare, Copy, LockKeyhole, Settings2, LogOut, ArrowUpRight } from "lucide-react";
 import { GithubIcon } from "./icons";
 import { FILES, FILE_ORDER, type FileId } from "../data/files";
 import { profile } from "../data/portfolio";
@@ -18,9 +18,12 @@ interface Props {
   onClose: () => void;
   onOpenFile: (id: FileId) => void;
   onToggleTerminal: () => void;
+  editorUnlocked: boolean;
+  onEnterEditor: () => void;
+  onExitEditor: () => void;
 }
 
-export default function CommandPalette({ open, onClose, onOpenFile, onToggleTerminal }: Props) {
+export default function CommandPalette({ open, onClose, onOpenFile, onToggleTerminal, editorUnlocked, onEnterEditor, onExitEditor }: Props) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,8 +37,37 @@ export default function CommandPalette({ open, onClose, onOpenFile, onToggleTerm
       icon: <span style={{ color: FILES[id].color }}>{FILES[id].icon}</span>,
       run: () => onOpenFile(id),
     }));
+    const editorCmds: Command[] = [
+      editorUnlocked
+        ? {
+            id: "action-editor-open",
+            label: "Open editor.config (Editor Mode)",
+            hint: ".admin",
+            icon: <Settings2 size={15} />,
+            run: () => onOpenFile("editor"),
+          }
+        : {
+            id: "action-editor-enter",
+            label: "Enter Editor Mode (J'rome only)",
+            hint: "passcode required",
+            icon: <LockKeyhole size={15} />,
+            run: onEnterEditor,
+          },
+      ...(editorUnlocked
+        ? [
+            {
+              id: "action-editor-exit",
+              label: "Exit Editor Mode",
+              hint: "lock again",
+              icon: <LogOut size={15} />,
+              run: onExitEditor,
+            } as Command,
+          ]
+        : []),
+    ];
     return [
       ...fileCmds,
+      ...editorCmds,
       {
         id: "action-terminal",
         label: "Toggle Terminal",
@@ -55,7 +87,7 @@ export default function CommandPalette({ open, onClose, onOpenFile, onToggleTerm
       {
         id: "action-github",
         label: "Open GitHub Profile",
-        hint: "github.com",
+        hint: "github.com/nonoyj",
         icon: <GithubIcon size={15} />,
         run: () => window.open(profile.socials.github, "_blank", "noopener"),
       },
@@ -67,7 +99,7 @@ export default function CommandPalette({ open, onClose, onOpenFile, onToggleTerm
         run: () => window.open(profile.socials.linkedin, "_blank", "noopener"),
       },
     ];
-  }, [onOpenFile, onToggleTerminal]);
+  }, [onOpenFile, onToggleTerminal, editorUnlocked, onEnterEditor, onExitEditor]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

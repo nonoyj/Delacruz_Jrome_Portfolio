@@ -7,6 +7,8 @@ import EditorArea from "./components/EditorArea";
 import Terminal from "./components/Terminal";
 import StatusBar from "./components/StatusBar";
 import CommandPalette from "./components/CommandPalette";
+import EditorGate from "./components/EditorGate";
+import { useContent } from "./hooks/useContent";
 import type { FileId } from "./data/files";
 
 export default function App() {
@@ -19,11 +21,23 @@ export default function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [line, setLine] = useState(1);
 
-  const openFile = useCallback((id: FileId) => {
-    setOpenTabs((tabs) => (tabs.includes(id) ? tabs : [...tabs, id]));
-    setActiveFile(id);
-    setMobileSidebar(false);
-  }, []);
+  /* Editor Mode (admin) */
+  const { content, save, reset, hasOverrides } = useContent();
+  const [editorUnlocked, setEditorUnlocked] = useState(false);
+  const [gateOpen, setGateOpen] = useState(false);
+
+  const openFile = useCallback(
+    (id: FileId) => {
+      if (id === "editor" && !editorUnlocked) {
+        setGateOpen(true);
+        return;
+      }
+      setOpenTabs((tabs) => (tabs.includes(id) ? tabs : [...tabs, id]));
+      setActiveFile(id);
+      setMobileSidebar(false);
+    },
+    [editorUnlocked]
+  );
 
   const selectTab = useCallback((id: FileId) => setActiveFile(id), []);
 
@@ -40,6 +54,41 @@ export default function App() {
     [activeFile]
   );
 
+  /* Editor Mode handlers */
+  const handleUnlock = useCallback(() => {
+    setEditorUnlocked(true);
+    setGateOpen(false);
+    setOpenTabs((tabs) => (tabs.includes("editor") ? tabs : [...tabs, "editor"]));
+    setActiveFile("editor");
+    setView("admin");
+  }, []);
+
+  const handleEnterEditor = useCallback(() => {
+    if (editorUnlocked) {
+      handleUnlock();
+    } else {
+      setGateOpen(true);
+    }
+  }, [editorUnlocked, handleUnlock]);
+
+  const handleExitEditor = useCallback(() => {
+    setEditorUnlocked(false);
+    setOpenTabs((tabs) => {
+      const next = tabs.filter((t) => t !== "editor");
+      if (activeFile === "editor") setActiveFile(next[0] ?? "welcome");
+      return next.length ? next : ["welcome"];
+    });
+    setView("explorer");
+  }, [activeFile]);
+
+  const handleUserClick = useCallback(() => {
+    if (editorUnlocked) {
+      handleEnterEditor();
+    } else {
+      setGateOpen(true);
+    }
+  }, [editorUnlocked, handleEnterEditor]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const mod = e.ctrlKey || e.metaKey;
@@ -54,6 +103,7 @@ export default function App() {
         setShowSidebar((s) => !s);
       } else if (e.key === "Escape") {
         setPaletteOpen(false);
+        setGateOpen(false);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -70,10 +120,19 @@ export default function App() {
           onChangeView={setView}
           terminalOpen={terminalOpen}
           onToggleTerminal={() => setTerminalOpen((t) => !t)}
+          editorUnlocked={editorUnlocked}
+          onUserClick={handleUserClick}
         />
 
         {showSidebar && (
-          <Sidebar view={view} activeFile={activeFile} onOpenFile={openFile} open={mobileSidebar} />
+          <Sidebar
+            view={view}
+            activeFile={activeFile}
+            onOpenFile={openFile}
+            open={mobileSidebar}
+            editorUnlocked={editorUnlocked}
+            onEditorClick={() => openFile("editor")}
+          />
         )}
 
         <EditorArea
@@ -83,11 +142,18 @@ export default function App() {
           onCloseTab={closeTab}
           onOpenFile={openFile}
           onLineChange={setLine}
+          content={content}
+          editor={{ save, reset, hasOverrides, onExit: handleExitEditor, onEnter: handleEnterEditor }}
         />
       </div>
 
       {terminalOpen && (
-        <Terminal onOpenFile={openFile} onClose={() => setTerminalOpen(false)} />
+        <Terminal
+          onOpenFile={openFile}
+          onClose={() => setTerminalOpen(false)}
+          onEnterEditor={handleEnterEditor}
+          content={content}
+        />
       )}
 
       <StatusBar
@@ -110,7 +176,12 @@ export default function App() {
         onClose={() => setPaletteOpen(false)}
         onOpenFile={openFile}
         onToggleTerminal={() => setTerminalOpen((t) => !t)}
+        editorUnlocked={editorUnlocked}
+        onEnterEditor={handleEnterEditor}
+        onExitEditor={handleExitEditor}
       />
+
+      <EditorGate open={gateOpen} onClose={() => setGateOpen(false)} onUnlock={handleUnlock} />
     </div>
   );
 }

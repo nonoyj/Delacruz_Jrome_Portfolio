@@ -2,7 +2,8 @@ import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Circle } from "lucide-react";
 import { FILES, type FileId } from "../data/files";
-import { FileView, LineNumbers, GUTTER_LINES } from "./content";
+import type { EditableContent } from "../data/portfolio";
+import { FileView, LineNumbers, GUTTER_LINES, type EditorBundle } from "./content";
 
 interface Props {
   openTabs: FileId[];
@@ -11,9 +12,11 @@ interface Props {
   onCloseTab: (id: FileId) => void;
   onOpenFile: (id: FileId) => void;
   onLineChange: (n: number) => void;
+  content: EditableContent;
+  editor: EditorBundle;
 }
 
-export default function EditorArea({ openTabs, activeFile, onSelectTab, onCloseTab, onOpenFile, onLineChange }: Props) {
+export default function EditorArea({ openTabs, activeFile, onSelectTab, onCloseTab, onOpenFile, onLineChange, content, editor }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const file = FILES[activeFile];
   const crumbs = ["portfolio", "src", ...file.path.slice(0, -1), file.name];
@@ -81,7 +84,7 @@ export default function EditorArea({ openTabs, activeFile, onSelectTab, onCloseT
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.28, ease: "easeOut" }}
               >
-                <FileView id={activeFile} onOpenFile={onOpenFile} />
+                <FileView id={activeFile} onOpenFile={onOpenFile} content={content} editor={editor} />
               </motion.div>
             </AnimatePresence>
           </div>

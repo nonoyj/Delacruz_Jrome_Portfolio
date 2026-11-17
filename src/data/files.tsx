@@ -1,7 +1,16 @@
 import type { ReactNode } from "react";
-import { FileCode2, FileJson, FileText, FolderOpen } from "lucide-react";
+import { FileCode2, FileJson, FileText, FolderOpen, GraduationCap, Award, Settings2 } from "lucide-react";
 
-export type FileId = "welcome" | "about" | "skills" | "projects" | "experience" | "contact";
+export type FileId =
+  | "welcome"
+  | "about"
+  | "skills"
+  | "projects"
+  | "experience"
+  | "education"
+  | "certifications"
+  | "contact"
+  | "editor";
 
 export interface FileDef {
   id: FileId;
@@ -53,6 +62,22 @@ export const FILES: Record<FileId, FileDef> = {
     color: "#519aba",
     language: "Markdown",
   },
+  education: {
+    id: "education",
+    name: "education.md",
+    path: ["src", "education.md"],
+    icon: <GraduationCap size={15} />,
+    color: "#519aba",
+    language: "Markdown",
+  },
+  certifications: {
+    id: "certifications",
+    name: "certifications.json",
+    path: ["src", "certifications.json"],
+    icon: <Award size={15} />,
+    color: "#dcb67a",
+    language: "JSON",
+  },
   contact: {
     id: "contact",
     name: "contact.ts",
@@ -61,6 +86,24 @@ export const FILES: Record<FileId, FileDef> = {
     color: "#3178c6",
     language: "TypeScript",
   },
+  editor: {
+    id: "editor",
+    name: "editor.config",
+    path: [".admin", "editor.config"],
+    icon: <Settings2 size={15} />,
+    color: "#a78bfa",
+    language: "Editor Config",
+  },
 };
 
-export const FILE_ORDER: FileId[] = ["welcome", "about", "skills", "projects", "experience", "contact"];
+/** Files visible in the explorer to everyone. `editor` is admin-only. */
+export const FILE_ORDER: Exclude<FileId, "editor">[] = [
+  "welcome",
+  "about",
+  "skills",
+  "projects",
+  "experience",
+  "education",
+  "certifications",
+  "contact",
+];

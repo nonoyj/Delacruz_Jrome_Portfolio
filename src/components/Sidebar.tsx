@@ -12,6 +12,8 @@ import {
   ListTree,
   Clock3,
   Star,
+  Settings2,
+  LockKeyhole,
 } from "lucide-react";
 import { FILES, FILE_ORDER, type FileId } from "../data/files";
 import { projects } from "../data/portfolio";
@@ -22,23 +24,25 @@ interface Props {
   activeFile: FileId;
   onOpenFile: (id: FileId) => void;
   open?: boolean;
+  editorUnlocked: boolean;
+  onEditorClick: () => void;
 }
 
 const COMMITS = [
-  { msg: "feat: add interactive terminal", meta: "jrome · 2 hours ago" },
-  { msg: "fix: purple accent contrast", meta: "jrome · yesterday" },
-  { msg: "docs: update README with setup guide", meta: "jrome · 3 days ago" },
-  { msg: "feat: command palette with fuzzy search", meta: "jrome · last week" },
+  { msg: "feat: mindful-minute background monitor", meta: "j'rome · 2 hours ago" },
+  { msg: "fix: purple accent contrast", meta: "j'rome · yesterday" },
+  { msg: "docs: update README with setup guide", meta: "j'rome · 3 days ago" },
+  { msg: "feat: command palette with fuzzy search", meta: "j'rome · last week" },
 ];
 
 const EXTENSIONS = [
   { name: "Purple Dark+", desc: "An elegant dark theme with purple accents. (This site)", meta: "1.2M downloads" },
   { name: "Portfolio Explorer", desc: "Turns your portfolio into a VS Code workspace.", meta: "48K downloads" },
-  { name: "Terminal Playground", desc: "A fake terminal that actually responds to commands.", meta: "12K downloads" },
-  { name: "Coffee Break", desc: "Reminds you to drink coffee. Essential for students.", meta: "900K downloads" },
+  { name: "Tone Pursuit", desc: "Guitar pedal & effects simulator. Never leaves the amp.", meta: "12K downloads" },
+  { name: "Packet Peek", desc: "Lightweight network inspector for the security-curious.", meta: "900K downloads" },
 ];
 
-export default function Sidebar({ view, activeFile, onOpenFile, open }: Props) {
+export default function Sidebar({ view, activeFile, onOpenFile, open, editorUnlocked, onEditorClick }: Props) {
   const [explorerOpen, setExplorerOpen] = useState(true);
   const [projectsOpen, setProjectsOpen] = useState(true);
   const [outlineOpen, setOutlineOpen] = useState(true);
@@ -105,7 +109,7 @@ export default function Sidebar({ view, activeFile, onOpenFile, open }: Props) {
                               <span className="tree-icon" style={{ color: "#a78bfa" }}>
                                 <CircleDot size={12} />
                               </span>
-                              <span className="tree-label">{p.name.toLowerCase()}.tsx</span>
+                              <span className="tree-label">{p.name.toLowerCase().replace(/\s+/g, "-")}.tsx</span>
                             </div>
                           ))}
                       </div>
@@ -142,24 +146,11 @@ export default function Sidebar({ view, activeFile, onOpenFile, open }: Props) {
             </div>
             {outlineOpen && (
               <>
-                <div className="outline-item" onClick={() => onOpenFile("welcome")}>
-                  <ListTree size={13} /> Welcome
-                </div>
-                <div className="outline-item" onClick={() => onOpenFile("about")}>
-                  <ListTree size={13} /> About
-                </div>
-                <div className="outline-item" onClick={() => onOpenFile("skills")}>
-                  <ListTree size={13} /> Skills
-                </div>
-                <div className="outline-item" onClick={() => onOpenFile("projects")}>
-                  <ListTree size={13} /> Projects
-                </div>
-                <div className="outline-item" onClick={() => onOpenFile("experience")}>
-                  <ListTree size={13} /> Experience
-                </div>
-                <div className="outline-item" onClick={() => onOpenFile("contact")}>
-                  <ListTree size={13} /> Contact
-                </div>
+                {FILE_ORDER.filter((id) => id !== "projects").map((id) => (
+                  <div key={id} className="outline-item" onClick={() => onOpenFile(id)}>
+                    <ListTree size={13} /> {FILES[id].name.replace(/\.[a-z]+$/, "")}
+                  </div>
+                ))}
               </>
             )}
 
@@ -168,13 +159,13 @@ export default function Sidebar({ view, activeFile, onOpenFile, open }: Props) {
               TIMELINE
             </div>
             <div className="outline-item">
-              <Clock3 size={13} /> 2025 — building this site
+              <Clock3 size={13} /> 2026 — shipping projects
             </div>
             <div className="outline-item">
-              <Clock3 size={13} /> 2024 — first hackathon
+              <Clock3 size={13} /> 2026 — first Flutter app
             </div>
             <div className="outline-item">
-              <Clock3 size={13} /> 2023 — first line of code
+              <Clock3 size={13} /> the spark — first line of code
             </div>
           </div>
         </>
@@ -264,6 +255,36 @@ export default function Sidebar({ view, activeFile, onOpenFile, open }: Props) {
                 </div>
               </div>
             ))}
+          </div>
+        </>
+      )}
+
+      {view === "admin" && editorUnlocked && (
+        <>
+          <div className="sidebar-header"><span>Admin</span></div>
+          <div className="sidebar-scroll">
+            <div className="tree-section-title">
+              <ChevronDown size={14} className="chevron" />
+              EDITOR MODE
+            </div>
+            <div
+              className={`tree-row ${activeFile === "editor" ? "active" : ""}`}
+              style={{ paddingLeft: 34 }}
+              onClick={onEditorClick}
+            >
+              <span className="tree-icon" style={{ color: FILES.editor.color }}>
+                <Settings2 size={15} />
+              </span>
+              <span className="tree-label">editor.config</span>
+            </div>
+            <div className="outline-item" style={{ paddingLeft: 34 }}>
+              <LockKeyhole size={13} /> signed in as J'rome
+            </div>
+            <div className="sidebar-note">
+              <strong>Editor Mode</strong>
+              Edit skills, tech stack, certifications, experiences and education.
+              Changes save to this browser — Export JSON to publish.
+            </div>
           </div>
         </>
       )}

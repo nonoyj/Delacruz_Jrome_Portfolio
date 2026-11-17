@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { X, Trash2, Plus } from "lucide-react";
-import { profile, projects, skillCategories } from "../data/portfolio";
+import { profile } from "../data/portfolio";
 import type { FileId } from "../data/files";
 
 interface Line {
@@ -11,6 +11,13 @@ interface Line {
 interface Props {
   onOpenFile: (id: FileId) => void;
   onClose: () => void;
+  onEnterEditor: () => void;
+  content: {
+    skills: { title: string }[];
+    experiences: { role: string; date: string }[];
+    certifications: { name: string; issuer: string; year: string }[];
+    education: { degree: string; period: string }[];
+  };
 }
 
 const WELCOME: Line[] = [
@@ -24,14 +31,18 @@ const HELP: Line[] = [
   { text: "  skills       → open skills.json", kind: "out" },
   { text: "  projects     → open projects/", kind: "out" },
   { text: "  experience   → open experience.md", kind: "out" },
+  { text: "  education    → open education.md", kind: "out" },
+  { text: "  certs        → open certifications.json", kind: "out" },
   { text: "  contact      → open contact.ts", kind: "out" },
   { text: "  open <file>  → open a file (e.g. open projects)", kind: "out" },
-  { text: "  whoami       → who is Jrome?", kind: "out" },
+  { text: "  editor       → Editor Mode (J'rome only 🔒)", kind: "out" },
+  { text: "  whoami       → who is J'rome?", kind: "out" },
+  { text: "  music        → current signal chain 🎸", kind: "out" },
   { text: "  socials      → links to GitHub / LinkedIn", kind: "out" },
   { text: "  clear        → clear the terminal", kind: "out" },
 ];
 
-export default function Terminal({ onOpenFile, onClose }: Props) {
+export default function Terminal({ onOpenFile, onClose, onEnterEditor, content }: Props) {
   const [lines, setLines] = useState<Line[]>(WELCOME);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
@@ -74,22 +85,42 @@ export default function Terminal({ onOpenFile, onClose }: Props) {
         onOpenFile("skills");
         print([
           { text: "Opening skills.json…", kind: "ok" },
-          {
-            text: skillCategories.map((c) => c.title).join(" · "),
-            kind: "out",
-          },
+          { text: content.skills.map((c) => c.title).join(" · "), kind: "out" },
         ]);
         break;
       case "projects":
         onOpenFile("projects");
         print([
           { text: "Opening projects/…", kind: "ok" },
-          ...projects.map((p) => ({ text: `  ▸ ${p.name} (${p.year})`, kind: "out" as const })),
+          { text: "  ▸ mindful-minute.tsx (2026)", kind: "out" },
+          { text: "  ▸ m-gear-iloilo.tsx (2026)", kind: "out" },
+          { text: "  ▸ mywarehouse-inventory.tsx (2026)", kind: "out" },
+          { text: "  ▸ evolverse.tsx — collab (2026)", kind: "out" },
         ]);
         break;
       case "experience":
         onOpenFile("experience");
-        print([{ text: "Opening experience.md…", kind: "ok" }]);
+        print([
+          { text: "Opening experience.md…", kind: "ok" },
+          ...content.experiences.slice(0, 3).map((x) => ({ text: `  • ${x.date} — ${x.role}`, kind: "out" as const })),
+        ]);
+        break;
+      case "education":
+        onOpenFile("education");
+        print([
+          { text: "Opening education.md…", kind: "ok" },
+          ...content.education.map((x) => ({ text: `  • ${x.period} — ${x.degree}`, kind: "out" as const })),
+        ]);
+        break;
+      case "certs":
+      case "certifications":
+        onOpenFile("certifications");
+        print([
+          { text: "Opening certifications.json…", kind: "ok" },
+          ...(content.certifications.length
+            ? content.certifications.map((c) => ({ text: `  • ${c.name} (${c.issuer}, ${c.year})`, kind: "out" as const }))
+            : [{ text: "  (empty — add some in Editor Mode)", kind: "out" as const }]),
+        ]);
         break;
       case "contact":
         onOpenFile("contact");
@@ -98,6 +129,10 @@ export default function Terminal({ onOpenFile, onClose }: Props) {
           { text: `  Email: ${profile.email}`, kind: "out" },
         ]);
         break;
+      case "editor":
+        print([{ text: "Opening Editor Mode… (passcode required)", kind: "ok" }]);
+        onEnterEditor();
+        break;
       case "open": {
         const map: Record<string, FileId> = {
           welcome: "welcome",
@@ -105,6 +140,9 @@ export default function Terminal({ onOpenFile, onClose }: Props) {
           skills: "skills",
           projects: "projects",
           experience: "experience",
+          education: "education",
+          certifications: "certifications",
+          certs: "certifications",
           contact: "contact",
         };
         const target = map[arg];
@@ -112,19 +150,26 @@ export default function Terminal({ onOpenFile, onClose }: Props) {
           onOpenFile(target);
           print([{ text: `Opening ${arg}…`, kind: "ok" }]);
         } else {
-          print([{ text: `open: no such file '${arg}'. Try: welcome, about, skills, projects, experience, contact`, kind: "err" }]);
+          print([{ text: `open: no such file '${arg}'. Try: welcome, about, skills, projects, experience, education, certs, contact`, kind: "err" }]);
         }
         break;
       }
+      case "music":
+        print([
+          { text: "🎸 Signal chain: Guitar → Tuner → Overdrive → Delay → Amp", kind: "out" },
+          { text: "Tone of the day: 'that one' — you know the one.", kind: "ok" },
+        ]);
+        break;
       case "socials":
         print([
-          { text: `  GitHub:   ${profile.socials.github}`, kind: "out" },
-          { text: `  LinkedIn: ${profile.socials.linkedin}`, kind: "out" },
+          { text: `  GitHub:   github.com/nonoyj`, kind: "out" },
+          { text: `  LinkedIn: in/j-rome-de-la-cruz`, kind: "out" },
+          { text: `  Facebook: fb.com/hicbazzuka`, kind: "out" },
           { text: `  Email:    ${profile.email}`, kind: "out" },
         ]);
         break;
       case "ls":
-        print([{ text: "welcome.tsx  about.tsx  skills.json  projects/  experience.md  contact.ts", kind: "out" }]);
+        print([{ text: "welcome.tsx  about.tsx  skills.json  projects/  experience.md  education.md  certifications.json  contact.ts", kind: "out" }]);
         break;
       case "sudo":
         print([{ text: "Nice try. This user has no sudo privileges (or mercy).", kind: "err" }]);

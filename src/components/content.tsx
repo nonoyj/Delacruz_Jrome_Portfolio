@@ -2,30 +2,35 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Rocket,
-  Store,
-  CloudSun,
-  Code2,
+  Brain,
+  Bike,
+  Warehouse,
+  Orbit,
   ExternalLink,
   Mail,
-  Phone,
   MapPin,
   Send,
   Copy,
   Check,
   Music,
-  Calculator,
+  Guitar,
   Flame,
-  Box,
+  Puzzle,
   Sparkles,
   GraduationCap,
   Coffee,
   Lightbulb,
   FolderGit2,
   MessageSquare,
+  Award,
+  ShieldCheck,
+  Code2,
 } from "lucide-react";
-import { GithubIcon, LinkedinIcon, FacebookIcon } from "./icons";
-import { profile, projects, skillCategories, experience } from "../data/portfolio";
+import { profile, projects } from "../data/portfolio";
+import type { EditableContent } from "../data/portfolio";
 import type { FileId } from "../data/files";
+import { GithubIcon, LinkedinIcon, FacebookIcon } from "./icons";
+import EditorView from "./EditorView";
 
 /* ---------- shared helpers ---------- */
 
@@ -40,13 +45,24 @@ export function LineNumbers({ count }: { count: number }) {
 }
 
 export const GUTTER_LINES: Record<FileId, number> = {
-  welcome: 80,
+  welcome: 90,
   about: 110,
-  skills: 120,
+  skills: 130,
   projects: 130,
   experience: 110,
+  education: 70,
+  certifications: 65,
   contact: 95,
+  editor: 90,
 };
+
+export interface EditorBundle {
+  save: (patch: Partial<EditableContent>) => void;
+  reset: () => void;
+  hasOverrides: boolean;
+  onExit: () => void;
+  onEnter: () => void;
+}
 
 function useInViewOnce<T extends HTMLElement>() {
   const ref = useRef<T>(null);
@@ -70,11 +86,11 @@ function useInViewOnce<T extends HTMLElement>() {
 }
 
 const TYPE_PHRASES = [
-  "IT / CS Student",
-  "Aspiring Full-Stack Dev",
+  "IT Student",
+  "Cybersecurity Enthusiast",
+  "Guitar Tone Chaser",
+  "Tech × Music Builder",
   "Problem Solver",
-  "Caffeine Enthusiast",
-  "Lifelong Learner",
 ];
 
 function useTypewriter(phrases: string[], speed = 65, pause = 1700) {
@@ -138,86 +154,129 @@ function SectionHead({ file, title, accent, sub }: { file: string; title: string
 }
 
 /* ============================================================
-   welcome.tsx — Hero
+   welcome.tsx — Hero (with photo)
    ============================================================ */
+function ProfilePhoto() {
+  const [failed, setFailed] = useState(false);
+
+  return (
+    <motion.div
+      className="hero-photo"
+      initial={{ opacity: 0, scale: 0.9, rotate: 3 }}
+      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+      transition={{ delay: 0.55, duration: 0.65, ease: "easeOut" }}
+    >
+      <div className="hp-window">
+        <div className="hp-caption">
+          <span className="cb-dots"><span /><span /><span /></span>
+          profile.png
+        </div>
+        <div className="hp-imgwrap">
+          {!failed ? (
+            <img
+              src={profile.photo}
+              alt={`Portrait of ${profile.name}`}
+              onError={() => setFailed(true)}
+            />
+          ) : (
+            <div className="hp-fallback">
+              <span>JD</span>
+            </div>
+          )}
+        </div>
+        <div className="hp-footer">
+          <span className="hp-name">{profile.name}</span>
+          <span className="hp-badge"><span className="pulse-dot" /> open to work</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function WelcomeView({ onOpenFile }: { onOpenFile: (id: FileId) => void }) {
   const typed = useTypewriter(TYPE_PHRASES);
 
   return (
     <div className="hero">
-      <motion.div className="hero-eyebrow" initial={{ opacity: 0, x: -14 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-        <span className="pulse-dot" />
-        <span className="tok-com">{"// hello world, i'm"}</span>
-      </motion.div>
-
-      <motion.h1
-        className="hero-name"
-        initial={{ opacity: 0, y: 26 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.65, delay: 0.08, ease: "easeOut" }}
-      >
-        Jrome <span className="gradient">Delacruz</span>
-      </motion.h1>
-
-      <motion.div
-        className="hero-role"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
-      >
-        <span className="tok-kw">const</span>{" "}
-        <span className="tok-var">role</span>{" "}
-        <span className="tok-plain">=</span>{" "}
-        <span className="typed">"{typed}"</span>
-        <span className="caret" />
-      </motion.div>
-
-      <motion.p className="hero-desc" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42, duration: 0.55 }}>
-        {profile.tagline.split("—")[0]}— based in <strong>{profile.location}</strong>. Currently a{" "}
-        <strong>{profile.role}</strong>, {profile.availability.toLowerCase()}.
-      </motion.p>
-
-      <motion.div className="hero-actions" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.54, duration: 0.55 }}>
-        <button type="button" className="btn btn-primary" onClick={() => onOpenFile("projects")}>
-          <FolderGit2 size={16} />
-          View Projects
-        </button>
-        <button type="button" className="btn btn-ghost" onClick={() => onOpenFile("contact")}>
-          <MessageSquare size={16} />
-          Contact Me
-        </button>
-        <a className="btn btn-ghost" href={profile.socials.github} target="_blank" rel="noopener noreferrer">
-          <GithubIcon size={16} />
-          GitHub
-        </a>
-      </motion.div>
-
-      <motion.div className="hero-stats" variants={stagger} initial="hidden" animate="show">
-        {profile.stats.map((s) => (
-          <motion.div key={s.label} className="stat-card" variants={staggerItem}>
-            <div className="stat-num">{s.value}</div>
-            <div className="stat-label">{s.label}</div>
+      <div className="hero-grid">
+        <div className="hero-main">
+          <motion.div className="hero-eyebrow" initial={{ opacity: 0, x: -14 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
+            <span className="pulse-dot" />
+            <span className="tok-com">{"// hello world, i'm"}</span>
           </motion.div>
-        ))}
-      </motion.div>
 
-      <motion.div className="hero-code" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.6 }}>
+          <motion.h1
+            className="hero-name"
+            initial={{ opacity: 0, y: 26 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, delay: 0.08, ease: "easeOut" }}
+          >
+            J'rome <span className="gradient">A. De la Cruz</span>
+          </motion.h1>
+
+          <motion.div
+            className="hero-role"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            <span className="tok-kw">const</span>{" "}
+            <span className="tok-var">role</span>{" "}
+            <span className="tok-plain">=</span>{" "}
+            <span className="typed">"{typed}"</span>
+            <span className="caret" />
+          </motion.div>
+
+          <motion.p className="hero-desc" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42, duration: 0.55 }}>
+            {profile.tagline} Based in <strong>{profile.location}</strong> — an{" "}
+            <strong>IT student</strong> into programming, cybersecurity, and everything audio.
+          </motion.p>
+
+          <motion.div className="hero-actions" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.54, duration: 0.55 }}>
+            <button type="button" className="btn btn-primary" onClick={() => onOpenFile("projects")}>
+              <FolderGit2 size={16} />
+              View Projects
+            </button>
+            <button type="button" className="btn btn-ghost" onClick={() => onOpenFile("contact")}>
+              <MessageSquare size={16} />
+              Contact Me
+            </button>
+            <a className="btn btn-ghost" href={profile.socials.github} target="_blank" rel="noopener noreferrer">
+              <GithubIcon size={16} />
+              GitHub
+            </a>
+          </motion.div>
+
+          <motion.div className="hero-stats" variants={stagger} initial="hidden" animate="show">
+            {profile.stats.map((s) => (
+              <motion.div key={s.label} className="stat-card" variants={staggerItem}>
+                <div className="stat-num">{s.value}</div>
+                <div className="stat-label">{s.label}</div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        <ProfilePhoto />
+      </div>
+
+      <motion.div className="hero-code" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75, duration: 0.6 }}>
         <div className="code-block">
           <div className="cb-header">
             <span className="cb-dots"><span /><span /><span /></span>
             jrome.config.ts — developer profile
           </div>
           <div><span className="tok-kw">const</span> <span className="tok-var">jrome</span> <span className="tok-plain">=</span> <span className="tok-plain">{"{"}</span></div>
-          <div>{"  "}role<span className="tok-plain">:</span> <span className="tok-str">"{profile.role}"</span><span className="tok-plain">,</span></div>
-          <div>{"  "}location<span className="tok-plain">:</span> <span className="tok-str">"{profile.location}"</span><span className="tok-plain">,</span></div>
-          <div>{"  "}focus<span className="tok-plain">:</span> <span className="tok-plain">[</span><span className="tok-str">"web dev"</span><span className="tok-plain">,</span> <span className="tok-str">"systems"</span><span className="tok-plain">,</span> <span className="tok-str">"UI/UX"</span><span className="tok-plain">],</span></div>
+          <div>{"  "}role<span className="tok-plain">:</span> <span className="tok-str">"IT student"</span><span className="tok-plain">,</span></div>
+          <div>{"  "}location<span className="tok-plain">:</span> <span className="tok-str">"Iloilo City, PH"</span><span className="tok-plain">,</span></div>
+          <div>{"  "}interests<span className="tok-plain">:</span> <span className="tok-plain">[</span><span className="tok-str">"cybersecurity"</span><span className="tok-plain">,</span> <span className="tok-str">"guitar tones"</span><span className="tok-plain">,</span> <span className="tok-str">"audio tech"</span><span className="tok-plain">],</span></div>
           <div>{"  "}coffee<span className="tok-plain">:</span> <span className="tok-type">Infinity</span><span className="tok-plain">,</span></div>
           <div>{"  "}openToWork<span className="tok-plain">:</span> <span className="tok-kw">true</span><span className="tok-plain">,</span></div>
-          <div><span className="tok-plain">{"}"}</span><span className="tok-plain">;</span></div>
+          <div><span className="tok-plain">{"}"};</span></div>
         </div>
       </motion.div>
 
-      <motion.div className="shortcut-hints" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.0, duration: 0.6 }}>
+      <motion.div className="shortcut-hints" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.05, duration: 0.6 }}>
         <span><kbd>Ctrl</kbd><kbd>K</kbd> command palette</span>
         <span><kbd>Ctrl</kbd><kbd>`</kbd> terminal</span>
         <span>try typing <kbd>help</kbd> in the terminal</span>
@@ -230,7 +289,7 @@ function WelcomeView({ onOpenFile }: { onOpenFile: (id: FileId) => void }) {
    about.tsx — About
    ============================================================ */
 function AboutView() {
-  const factIcons = [Music, Calculator, Flame, Box];
+  const factIcons = [Guitar, ShieldCheck, Puzzle, Music];
 
   return (
     <div>
@@ -238,7 +297,7 @@ function AboutView() {
         file="src/about.tsx"
         title="About"
         accent="Me"
-        sub="A quick `npm run intro` on who I am, what I do, and why I love this stuff."
+        sub="A quick `npm run intro` — who I am, what I'm into, and why tech + music."
       />
 
       <div className="about-grid">
@@ -280,8 +339,9 @@ function AboutView() {
               <div><span className="tok-kw">const</span> <span className="tok-var">setup</span> <span className="tok-plain">= {"{"}</span></div>
               <div>{"  "}editor<span className="tok-plain">:</span> <span className="tok-str">"VS Code (obviously)"</span><span className="tok-plain">,</span></div>
               <div>{"  "}theme<span className="tok-plain">:</span> <span className="tok-str">"Purple Dark+"</span><span className="tok-plain">,</span></div>
-              <div>{"  "}music<span className="tok-plain">:</span> <span className="tok-str">"lo-fi beats to debug to"</span><span className="tok-plain">,</span></div>
-              <div><span className="tok-plain">{"}"}</span>;</div>
+              <div>{"  "}rig<span className="tok-plain">:</span> <span className="tok-str">"guitar → pedals → amp"</span><span className="tok-plain">,</span></div>
+              <div>{"  "}playlist<span className="tok-plain">:</span> <span className="tok-str">"lo-fi & tone demos"</span><span className="tok-plain">,</span></div>
+              <div><span className="tok-plain">{"}"};</span></div>
             </div>
           </motion.div>
         </motion.div>
@@ -291,10 +351,12 @@ function AboutView() {
 }
 
 /* ============================================================
-   skills.json — Skills
+   skills.json — Skills + tech stack chips
    ============================================================ */
-function SkillsView() {
+function SkillsView({ content }: { content: EditableContent }) {
   const { ref, inView } = useInViewOnce<HTMLDivElement>();
+
+  const categories = Array.from(new Set(content.techStack.map((t) => t.category)));
 
   return (
     <div>
@@ -305,20 +367,8 @@ function SkillsView() {
         sub="Honest self-assessment — always leveling up, never done learning."
       />
 
-      <motion.div className="code-block" {...fadeUp} style={{ marginBottom: 26 }}>
-        <div className="cb-header">
-          <span className="cb-dots"><span /><span /><span /></span>
-          src/skills.json — excerpt
-        </div>
-        <div><span className="tok-plain">{"{"}</span></div>
-        <div>{"  "}<span className="tok-prop">"status"</span><span className="tok-plain">:</span> <span className="tok-str">"learning_everyday"</span><span className="tok-plain">,</span></div>
-        <div>{"  "}<span className="tok-prop">"approach"</span><span className="tok-plain">:</span> <span className="tok-str">"build_real_things"</span><span className="tok-plain">,</span></div>
-        <div>{"  "}<span className="tok-prop">"stack"</span><span className="tok-plain">:</span> <span className="tok-plain">{"{"}</span> <span className="tok-dim">/* see below */</span> <span className="tok-plain">{"}"} </span></div>
-        <div><span className="tok-plain">{"}"}</span></div>
-      </motion.div>
-
       <motion.div className="skills-grid" ref={ref} variants={stagger} initial="hidden" animate={inView ? "show" : "hidden"}>
-        {skillCategories.map((cat) => (
+        {content.skills.map((cat) => (
           <motion.div key={cat.title} className={`skill-card ${inView ? "visible" : ""}`} variants={staggerItem}>
             <h3><Code2 size={14} /> {cat.title}</h3>
             {cat.skills.map((s) => (
@@ -335,15 +385,40 @@ function SkillsView() {
           </motion.div>
         ))}
       </motion.div>
+
+      <div className="section-title" style={{ marginTop: 34 }}>
+        <span className="tok-com">{"// tech_stack — my everyday toolbox"}</span>
+      </div>
+      {categories.map((cat) => (
+        <div key={cat} className="tech-group">
+          <div className="tech-cat">
+            <span className="tok-kw">const</span> <span className="tok-var">{cat.toLowerCase().replace(/\s+/g, "_")}</span> <span className="tok-plain">=</span>
+          </div>
+          <div className="tech-chips">
+            {content.techStack
+              .filter((t) => t.category === cat)
+              .map((t) => (
+                <motion.span
+                  key={t.name}
+                  className="tech-chip"
+                  whileHover={{ y: -3, scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                >
+                  {t.name}
+                </motion.span>
+              ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
 
 /* ============================================================
-   projects/ — Projects
+   projects/ — Projects (real repos)
    ============================================================ */
 function ProjectsView() {
-  const icons = [Rocket, Store, CloudSun, Code2, FolderGit2];
+  const icons = [Brain, Bike, Warehouse, Orbit, Rocket];
 
   return (
     <div>
@@ -351,7 +426,7 @@ function ProjectsView() {
         file="src/projects/"
         title="Things I've"
         accent="Built"
-        sub="Real projects, real problems, real commits at 2 AM. (Content lives in src/data/portfolio.ts — ready for my actual repos.)"
+        sub="Real repos, real commits — plus one team collaboration. All live on GitHub."
       />
 
       <motion.div className="projects-grid" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-40px" }}>
@@ -378,6 +453,7 @@ function ProjectsView() {
               </div>
               <p className="project-desc">{p.description}</p>
               <div className="project-tags">
+                {p.collab && <span className="tag tag-collab">collab</span>}
                 {p.tech.map((t) => <span key={t} className="tag">{t}</span>)}
               </div>
               <div className="project-year">{"// shipped " + p.year}</div>
@@ -392,19 +468,19 @@ function ProjectsView() {
 /* ============================================================
    experience.md — Timeline
    ============================================================ */
-function ExperienceView() {
+function ExperienceView({ content }: { content: EditableContent }) {
   return (
     <div>
       <SectionHead
         file="src/experience.md"
         title="The Journey"
         accent="So Far"
-        sub="From first line of code to leading projects — rendered as git log --graph, but prettier."
+        sub="Projects, collaborations, and milestones — rendered as git log --graph, but prettier."
       />
 
-      <div className="timeline" ref={(el) => { if (el) el.querySelectorAll<HTMLElement>(".reveal").forEach((n, i) => { n.style.transitionDelay = `${i * 60}ms`; }); }}>
-        {experience.map((e) => (
-          <motion.div key={e.role} className="timeline-item reveal" {...fadeUp}>
+      <div className="timeline">
+        {content.experiences.map((e) => (
+          <motion.div key={`${e.role}-${e.date}`} className="timeline-item reveal" {...fadeUp}>
             <div className="timeline-dot" />
             <div className="timeline-date">{e.date}</div>
             <div className="timeline-role">{e.role}</div>
@@ -413,6 +489,82 @@ function ExperienceView() {
           </motion.div>
         ))}
       </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   education.md — Education
+   ============================================================ */
+function EducationView({ content }: { content: EditableContent }) {
+  return (
+    <div>
+      <SectionHead
+        file="src/education.md"
+        title="Education &"
+        accent="Learning"
+        sub="Schools, degrees, and the ongoing curriculum of curiosity."
+      />
+
+      <div className="timeline">
+        {content.education.map((e) => (
+          <motion.div key={`${e.degree}-${e.period}`} className="timeline-item reveal" {...fadeUp}>
+            <div className="timeline-dot" />
+            <div className="timeline-date">{e.period}</div>
+            <div className="timeline-role">{e.degree}</div>
+            <div className="timeline-org">{e.school}</div>
+            <p className="timeline-desc">{e.description}</p>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   certifications.json — Certifications
+   ============================================================ */
+function CertificationsView({ content, editor }: { content: EditableContent; editor: EditorBundle }) {
+  return (
+    <div>
+      <SectionHead
+        file="src/certifications.json"
+        title="Credentials &"
+        accent="Certifications"
+        sub="Certificates, awards, and completed courses — updated as I earn them."
+      />
+
+      {content.certifications.length === 0 ? (
+        <motion.div className="empty-state" {...fadeUp}>
+          <Award size={34} />
+          <div className="empty-title">certifications.json is empty</div>
+          <p className="empty-sub">
+            No certifications listed yet. J'rome can add them in{" "}
+            <strong>Editor Mode</strong> — or edit <code>src/data/portfolio.ts</code> directly.
+          </p>
+          <button type="button" className="btn btn-primary" onClick={editor.onEnter}>
+            <ShieldCheck size={15} />
+            Enter Editor Mode
+          </button>
+        </motion.div>
+      ) : (
+        <motion.div className="certs-grid" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-40px" }}>
+          {content.certifications.map((c) => (
+            <motion.div key={c.name} className="cert-card" variants={staggerItem}>
+              <div className="cert-icon"><Award size={20} /></div>
+              <div className="cert-name">{c.name}</div>
+              <div className="cert-issuer">
+                {c.issuer}{c.year ? ` · ${c.year}` : ""}
+              </div>
+              {c.link && (
+                <a className="cert-link" href={c.link} target="_blank" rel="noopener noreferrer">
+                  view credential <ExternalLink size={12} />
+                </a>
+              )}
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -448,9 +600,9 @@ function ContactView() {
   };
 
   const socials = [
-    { icon: GithubIcon, label: "GitHub", handle: "github.com/jromedelacruz", url: profile.socials.github },
-    { icon: LinkedinIcon, label: "LinkedIn", handle: "in/jromedelacruz", url: profile.socials.linkedin },
-    { icon: FacebookIcon, label: "Facebook", handle: "fb.com/jromedelacruz", url: profile.socials.facebook },
+    { icon: GithubIcon, label: "GitHub", handle: "github.com/nonoyj", url: profile.socials.github },
+    { icon: LinkedinIcon, label: "LinkedIn", handle: "in/j-rome-de-la-cruz", url: profile.socials.linkedin },
+    { icon: FacebookIcon, label: "Facebook", handle: "fb.com/hicbazzuka", url: profile.socials.facebook },
     { icon: Mail, label: "Email", handle: profile.email, url: `mailto:${profile.email}` },
   ];
 
@@ -460,7 +612,7 @@ function ContactView() {
         file="src/contact.ts"
         title="Let's Build Something"
         accent="Together"
-        sub="Open to internships, freelance work, hackathon teams, or just talking shop about code."
+        sub="Open to internships, freelance work, collabs — or just talking shop about code and guitar tones."
       />
 
       <div className="contact-grid">
@@ -482,7 +634,7 @@ function ContactView() {
             <label><span className="tok-kw">const</span> message =</label>
             <textarea
               rows={5}
-              placeholder={`// hi jrome, let's work on…`}
+              placeholder={`// hi j'rome, let's work on…`}
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
             />
@@ -525,7 +677,7 @@ function ContactView() {
               ))}
             </div>
             <div style={{ marginTop: 14, fontSize: 12.5, color: "var(--text-dim)", display: "flex", alignItems: "center", gap: 7 }}>
-              <Phone size={13} style={{ color: "var(--accent)" }} />
+              <Flame size={13} style={{ color: "var(--accent)" }} />
               Prefer chat? The terminal below accepts `contact` too.
             </div>
           </motion.div>
@@ -535,13 +687,46 @@ function ContactView() {
   );
 }
 
-export function FileView({ id, onOpenFile }: { id: FileId; onOpenFile: (id: FileId) => void }) {
+/* ============================================================
+   editor.config — Editor Mode (admin-only)
+   ============================================================ */
+function EditorModeView({ content, editor }: { content: EditableContent; editor: EditorBundle }) {
+  return (
+    <div>
+      <div className="section-title">
+        <span className="tok-com">{"// .admin/editor.config — you have the keys 🔑"}</span>
+      </div>
+      <EditorView
+        content={content}
+        save={editor.save}
+        reset={editor.reset}
+        hasOverrides={editor.hasOverrides}
+        onExit={editor.onExit}
+      />
+    </div>
+  );
+}
+
+export function FileView({
+  id,
+  onOpenFile,
+  content,
+  editor,
+}: {
+  id: FileId;
+  onOpenFile: (id: FileId) => void;
+  content: EditableContent;
+  editor: EditorBundle;
+}) {
   switch (id) {
     case "welcome": return <WelcomeView onOpenFile={onOpenFile} />;
     case "about": return <AboutView />;
-    case "skills": return <SkillsView />;
+    case "skills": return <SkillsView content={content} />;
     case "projects": return <ProjectsView />;
-    case "experience": return <ExperienceView />;
+    case "experience": return <ExperienceView content={content} />;
+    case "education": return <EducationView content={content} />;
+    case "certifications": return <CertificationsView content={content} editor={editor} />;
     case "contact": return <ContactView />;
+    case "editor": return <EditorModeView content={content} editor={editor} />;
   }
 }
