@@ -98,7 +98,6 @@ export const defaultTechStack: TechItem[] = [
   { name: "Git & GitHub", category: "Web & Tools", img: "/tech/git-github.png" },
   { name: "Android", category: "Web & Tools", img: "/tech/android.webp" },
   { name: "VS Code", category: "Web & Tools", img: "/tech/vscode.webp" },
-  { name: "Cisco Packet Tracer", category: "Web & Tools", img: "/tech/cisco-packet-tracer.webp" },
 ];
 
 /* ---------------- Certifications ---------------- */
