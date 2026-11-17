@@ -26,12 +26,23 @@ import { GithubIcon, LinkedinIcon, FacebookIcon } from "./icons";
 
 /* ---------- shared ---------- */
 
-const fadeUp = {
-  initial: { opacity: 0, y: 30, filter: "blur(8px)" },
-  whileInView: { opacity: 1, y: 0, filter: "blur(0px)" },
-  viewport: { once: true, margin: "-60px" },
-  transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
-};
+/* Small screens / touch devices: skip the blur filter (GPU-heavy on phones —
+   it made reveals stutter or pop instantly) and keep a crisp rise instead. */
+const IS_SMALL = typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
+
+const fadeUp = IS_SMALL
+  ? {
+      initial: { opacity: 0, y: 22 },
+      whileInView: { opacity: 1, y: 0 },
+      viewport: { once: true, margin: "-40px" },
+      transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
+    }
+  : {
+      initial: { opacity: 0, y: 30, filter: "blur(8px)" },
+      whileInView: { opacity: 1, y: 0, filter: "blur(0px)" },
+      viewport: { once: true, margin: "-60px" },
+      transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
+    };
 
 const stagger = {
   hidden: {},

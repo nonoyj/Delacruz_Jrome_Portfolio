@@ -1219,6 +1219,25 @@ body {
   .hero { padding-top: 96px; }
   .section { padding: 84px 0; }
 
+  /* --- Centered mobile layout (pendorlini-style) --- */
+  .hero-main { text-align: center; }
+  .hero-main .eyebrow { justify-content: center; }
+  .hero-name { justify-content: center; text-align: center; }
+  .hero-role { justify-content: center; }
+  .hero-desc { margin-left: auto; margin-right: auto; max-width: 34rem; }
+  .hero-actions { justify-content: center; }
+  .hero-stats { text-align: center; }
+  .section-head { text-align: center; }
+  .section-head .eyebrow { justify-content: center; }
+  .tech-grid { justify-content: center; }
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  /* GPU relief: stacked backdrop-filters tank phone scrolling */
+  .stat, .project-card { backdrop-filter: none; -webkit-backdrop-filter: none; }
+
   .nav-burger { display: flex; }
   .nav-socials > a:not(.nav-cta) { display: none; }
   .scroll-indicator { display: none; }
@@ -1314,7 +1333,7 @@ body {
   .nav-scrolled { padding: 10px 16px; }
   .hero-name { font-size: clamp(44px, 13vw, 60px); }
   .hero-lead { font-size: 15px; }
-  .about-statement { font-size: 16px; }
+  .about-statement { font-size: 16px; text-align: center; }
   .section-title { font-size: clamp(26px, 7vw, 34px); }
   .contact-form input, .contact-form textarea { font-size: 16px; } /* prevents iOS zoom-on-focus */
   .cert-featured { flex-direction: column; }
