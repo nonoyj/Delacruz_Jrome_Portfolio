@@ -114,7 +114,8 @@ export interface Certification {
   name: string;
   issuer: string;
   year: string;
-  link?: string;
+  link?: string; // PDF credential
+  image?: string; // certificate image (shown on the card)
 }
 
 export const defaultCertifications: Certification[] = [
@@ -123,6 +124,7 @@ export const defaultCertifications: Certification[] = [
     issuer: "Cisco Networking Academy",
     year: "2026",
     link: "/certs/cisco-packet-tracer.pdf",
+    image: "/certs/cisco-packet-tracer.png",
   },
 ];
 

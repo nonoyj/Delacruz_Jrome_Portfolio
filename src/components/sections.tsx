@@ -481,16 +481,31 @@ export function Education({ content }: { content: EditableContent }) {
             ) : (
               <motion.div className="certs-grid" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-40px" }}>
                 {content.certifications.map((c) => (
-                  <motion.div key={c.name} className="cert-card" variants={staggerItem}>
-                    <div className="cert-icon"><Award size={18} /></div>
-                    <div>
-                      <div className="cert-name">{c.name}</div>
-                      <div className="cert-issuer">{c.issuer}{c.year ? ` · ${c.year}` : ""}</div>
-                      {c.link && (
-                        <a className="cert-link" href={c.link} target="_blank" rel="noopener noreferrer">
-                          view credential <ExternalLink size={11} />
-                        </a>
+                  <motion.div key={c.name} className={`cert-card ${c.image ? "cert-featured" : ""}`} variants={staggerItem}>
+                    {c.image && (
+                      <a
+                        className="cert-img-link"
+                        href={c.link ?? c.image}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={c.link ? "View PDF credential" : "View certificate"}
+                      >
+                        <img src={c.image} alt={`${c.name} certificate`} loading="lazy" />
+                      </a>
+                    )}
+                    <div className="cert-body">
+                      {!c.image && (
+                        <div className="cert-icon"><Award size={18} /></div>
                       )}
+                      <div>
+                        <div className="cert-name">{c.name}</div>
+                        <div className="cert-issuer">{c.issuer}{c.year ? ` · ${c.year}` : ""}</div>
+                        {c.link && (
+                          <a className="cert-link" href={c.link} target="_blank" rel="noopener noreferrer">
+                            view credential (pdf) <ExternalLink size={11} />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 ))}
@@ -507,20 +522,49 @@ export function Education({ content }: { content: EditableContent }) {
    CONTACT
    ============================================================ */
 export function Contact() {
-  const [status, setStatus] = useState<{ kind: "success" | "error"; msg: string } | null>(null);
+  const [status, setStatus] = useState<{ kind: "success" | "error" | "sending"; msg: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
 
-  const submit = (e: React.FormEvent) => {
+  /* Sends directly to J'rome's inbox via FormSubmit (formsubmit.co/ajax).
+     First-ever submission triggers a one-time activation email; after that,
+     every message lands straight in delacruzjrome@gmail.com. */
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       setStatus({ kind: "error", msg: "All fields are required — even the fun ones." });
       return;
     }
-    const subject = encodeURIComponent(`Portfolio contact from ${form.name}`);
-    const body = encodeURIComponent(`${form.message}\n\n— ${form.name} (${form.email})`);
-    window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`;
-    setStatus({ kind: "success", msg: "Opening your mail client… or just email me directly." });
+    setStatus({ kind: "sending", msg: "// sending your message…" });
+    try {
+      const res = await fetch(`https://formsubmit.co/ajax/${profile.email}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          message: form.message,
+          _subject: `Portfolio contact from ${form.name}`,
+          _template: "table",
+          _captcha: "false",
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && (data.success === "true" || data.success === true)) {
+        setForm({ name: "", email: "", message: "" });
+        setStatus({ kind: "success", msg: "Message sent! I'll get back to you soon. ✓" });
+      } else {
+        throw new Error(data.message || "send failed");
+      }
+    } catch {
+      const subject = encodeURIComponent(`Portfolio contact from ${form.name}`);
+      const body = encodeURIComponent(`${form.message}\n\n— ${form.name} (${form.email})`);
+      window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`;
+      setStatus({
+        kind: "error",
+        msg: "Direct send failed — opened your mail app instead. Or email me directly.",
+      });
+    }
   };
 
   const copyEmail = async () => {
@@ -585,8 +629,14 @@ export function Contact() {
             <input type="email" placeholder='"you@example.com"' value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             <label><span className="tok-kw">const</span> message =</label>
             <textarea rows={5} placeholder="// hi j'rome, let's work on…" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
-            <button type="submit" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-              <Send size={15} /> send_message();
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: "100%", justifyContent: "center" }}
+              disabled={status?.kind === "sending"}
+            >
+              <Send size={15} />
+              {status?.kind === "sending" ? "sending…" : "send_message();"}
             </button>
             <div className={`form-status ${status?.kind ?? ""}`}>{status?.msg}</div>
           </motion.form>

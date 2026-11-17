@@ -1259,3 +1259,33 @@ body {
   box-shadow: 0 4px 16px var(--accent-glow);
   transform: translateY(-2px);
 }
+
+/* ============================================================
+   Featured certificate (image + pdf)
+   ============================================================ */
+.cert-featured {
+  flex-direction: column;
+  gap: 12px;
+}
+.cert-img-link {
+  display: block;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-input);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.cert-img-link:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-strong);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 16px var(--accent-glow);
+}
+.cert-img-link img {
+  width: 100%;
+  display: block;
+}
+.cert-body {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
