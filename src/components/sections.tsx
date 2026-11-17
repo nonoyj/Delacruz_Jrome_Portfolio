@@ -388,7 +388,19 @@ export function Projects() {
             return (
               <motion.article key={p.name} className="project-card" variants={staggerItem}>
                 <div className="project-top">
-                  <div className="project-icon"><Icon size={20} /></div>
+                  {p.logo ? (
+                    <a
+                      className="project-logo"
+                      href={p.live ?? p.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={p.live ? `Open ${p.name}` : `${p.name} on GitHub`}
+                    >
+                      <img src={p.logo} alt={`${p.name} logo`} loading="lazy" />
+                    </a>
+                  ) : (
+                    <div className="project-icon"><Icon size={20} /></div>
+                  )}
                   <div className="project-links">
                     {p.live && (
                       <a href={p.live} target="_blank" rel="noopener noreferrer" title="Live demo">

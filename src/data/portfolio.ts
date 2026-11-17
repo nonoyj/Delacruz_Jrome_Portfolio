@@ -137,6 +137,7 @@ export interface Project {
   github: string;
   live?: string;
   apk?: string; // direct download link for an installable .apk
+  logo?: string; // project logo image (shown on the card)
   collab?: boolean;
 }
 
@@ -149,6 +150,7 @@ export const projects: Project[] = [
     year: "2026",
     github: "https://github.com/nonoyj/Mindful-Minute",
     apk: "https://drive.google.com/uc?export=download&id=1D_61a1qP_zscE25Ob7ozHr55_QZ6C6kC",
+    logo: "/projects/mindful-minute.png",
   },
   {
     name: "M-Gear Iloilo",
@@ -157,6 +159,8 @@ export const projects: Project[] = [
     tech: ["React", "TypeScript", "Vite", "CSS"],
     year: "2026",
     github: "https://github.com/nonoyj/M-Gear-Iloilo",
+    live: "https://it314-final-delacruz.netlify.app/",
+    logo: "/projects/mgear.png",
   },
   {
     name: "MyWarehouse Inventory",
@@ -165,6 +169,7 @@ export const projects: Project[] = [
     tech: ["C#", "SQL", "Database Design"],
     year: "2026",
     github: "https://github.com/nonoyj/DBMS---MyWarehouse-Inventory-Management-",
+    logo: "/projects/mywarehouse.png",
   },
   {
     name: "Emergen",
@@ -174,6 +179,7 @@ export const projects: Project[] = [
     year: "2026",
     github: "https://github.com/Klyxen/DevDash2026-Evolverse",
     live: "https://emergeng.netlify.app/",
+    logo: "/projects/emergen.png",
     collab: true,
   },
   {
@@ -184,6 +190,7 @@ export const projects: Project[] = [
     year: "2026",
     github: "https://github.com/nonoyj/StageFlow",
     apk: "https://github.com/nonoyj/StageFlow/raw/main/stageflow.apk",
+    logo: "/projects/stageflow.png",
   },
 ];
 
